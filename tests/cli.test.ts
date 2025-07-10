@@ -1,5 +1,5 @@
-import { ErrorCode, JtError } from '../src/errors';
 import { processQuery } from '../src/cli';
+import { JtError } from '../src/errors';
 import type { CliOptions } from '../src/types';
 
 // モック用のデータ
@@ -74,7 +74,7 @@ describe('processQuery', () => {
 
     it('should output as CSV', async () => {
       const options: CliOptions = {
-        query: '[$]',  // 配列でラップ
+        query: '[$]', // 配列でラップ
         inputFormat: 'json',
         outputFormat: 'csv',
         input: mockJsonString,
@@ -117,7 +117,7 @@ describe('processQuery', () => {
       };
 
       const result = await processQuery(options);
-      expect(result).toBe('');  // undefinedは空文字列になる
+      expect(result).toBe(''); // undefinedは空文字列になる
     });
   });
 

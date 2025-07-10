@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { isatty } from 'node:tty';
 import { Command } from 'commander';
@@ -10,7 +9,7 @@ import type { CliOptions, InputFormat, OutputFormat } from './types';
 
 // package.jsonから情報を読み込む
 const packageInfo = JSON.parse(
-  readFileSync(new URL('../package.json', import.meta.url), 'utf8')
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
 ) as { version: string; description: string };
 
 /**
@@ -32,11 +31,11 @@ export async function processQuery(options: CliOptions): Promise<string> {
  */
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
-  
+
   for await (const chunk of process.stdin) {
     chunks.push(chunk);
   }
-  
+
   return Buffer.concat(chunks).toString('utf8');
 }
 
@@ -53,7 +52,7 @@ async function getInput(filePath?: string): Promise<string> {
           ErrorCode.FILE_NOT_FOUND,
           `File not found: ${filePath}`,
           undefined,
-          'Check the file path and try again'
+          'Check the file path and try again',
         );
       }
       throw error;
@@ -69,7 +68,7 @@ async function getInput(filePath?: string): Promise<string> {
     ErrorCode.INVALID_INPUT,
     'No input provided',
     'Use a file path or pipe data to stdin',
-    'Example: cat data.json | jt "$.name"'
+    'Example: cat data.json | jt "$.name"',
   );
 }
 
@@ -86,14 +85,22 @@ function detectInputFormat(input: string, filePath?: string): InputFormat {
 
   // 内容から判定
   const trimmed = input.trim();
-  
+
   // JSON Lines: 複数行でそれぞれがJSONっぽい
   if (trimmed.includes('\n')) {
-    const lines = trimmed.split('\n').filter(line => line.trim());
-    if (lines.length > 1 && lines.every(line => {
-      const first = line.trim()[0];
-      return first === '{' || first === '[' || first === '"' || /^(true|false|null|\d)/.test(line.trim());
-    })) {
+    const lines = trimmed.split('\n').filter((line) => line.trim());
+    if (
+      lines.length > 1 &&
+      lines.every((line) => {
+        const first = line.trim()[0];
+        return (
+          first === '{' ||
+          first === '[' ||
+          first === '"' ||
+          /^(true|false|null|\d)/.test(line.trim())
+        );
+      })
+    ) {
       return 'jsonl';
     }
   }
@@ -119,9 +126,14 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .version(packageInfo.version)
     .argument('<query>', 'JSONata query expression')
     .argument('[file]', 'Input file (JSON, YAML, or JSON Lines)')
-    .option('-i, --input-format <format>', 'Input format: json, yaml, jsonl (auto-detected if not specified)')
+    .option(
+      '-i, --input-format <format>',
+      'Input format: json, yaml, jsonl (auto-detected if not specified)',
+    )
     .option('-o, --output-format <format>', 'Output format', 'pretty')
-    .addHelpText('after', `
+    .addHelpText(
+      'after',
+      `
 Examples:
   $ jt '$.name' data.json
   $ cat data.yaml | jt '$.items[*].price'
@@ -134,25 +146,26 @@ Output formats:
   jsonl    JSON Lines (one JSON per line)
   yaml     YAML format
   csv      CSV format (requires array of objects)
-`)
+`,
+    )
     .action(async (query: string, file?: string) => {
       try {
         const opts = program.opts<{ inputFormat?: string; outputFormat?: string }>();
-        
+
         // 入力を取得
         const input = await getInput(file);
-        
+
         // 入力形式を決定（指定されていない場合は自動検出）
-        const inputFormat = opts.inputFormat as InputFormat || detectInputFormat(input, file);
-        
+        const inputFormat = (opts.inputFormat as InputFormat) || detectInputFormat(input, file);
+
         // 出力形式を検証
-        const outputFormat = opts.outputFormat as OutputFormat || 'pretty';
+        const outputFormat = (opts.outputFormat as OutputFormat) || 'pretty';
         if (!['pretty', 'compact', 'jsonl', 'yaml', 'csv'].includes(outputFormat)) {
           throw new JtError(
             ErrorCode.INVALID_FORMAT,
             `Invalid output format: ${outputFormat}`,
             undefined,
-            'Use one of: pretty, compact, jsonl, yaml, csv'
+            'Use one of: pretty, compact, jsonl, yaml, csv',
           );
         }
 
@@ -165,7 +178,7 @@ Output formats:
         };
 
         const result = await processQuery(options);
-        
+
         // 結果を出力
         console.log(result);
       } catch (error) {
