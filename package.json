@@ -11,13 +11,13 @@
     "yaml",
     "csv"
   ],
-  "homepage": "https://github.com/TAKEDA-Takashi/jt#readme",
+  "homepage": "https://github.com/TAKEDA-Takashi/jt-cli#readme",
   "bugs": {
-    "url": "https://github.com/TAKEDA-Takashi/jt/issues"
+    "url": "https://github.com/TAKEDA-Takashi/jt-cli/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TAKEDA-Takashi/jt.git"
+    "url": "git+https://github.com/TAKEDA-Takashi/jt-cli.git"
   },
   "license": "MIT",
   "author": "TAKEDA Takashi",
