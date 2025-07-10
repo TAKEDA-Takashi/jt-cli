@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { execSync } from 'node:child_process';
+import { describe, expect, it } from 'vitest';
 import { processQuery } from '../src/cli';
 import { JtError } from '../src/errors';
 import type { CliOptions } from '../src/types';
@@ -188,6 +188,68 @@ describe('processQuery', () => {
 
       const result = await processQuery(options);
       expect(result).toBe('');
+    });
+  });
+
+  describe('no query expression', () => {
+    it('should format JSON without query', async () => {
+      const options: CliOptions = {
+        query: undefined,
+        inputFormat: 'json',
+        outputFormat: 'pretty',
+        input: mockJsonString,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('{\n  "name": "Alice",\n  "age": 30\n}');
+    });
+
+    it('should format YAML without query', async () => {
+      const options: CliOptions = {
+        query: undefined,
+        inputFormat: 'yaml',
+        outputFormat: 'yaml',
+        input: mockYamlString,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('name: Alice\nage: 30\n');
+    });
+
+    it('should format JSON Lines without query', async () => {
+      const options: CliOptions = {
+        query: undefined,
+        inputFormat: 'jsonl',
+        outputFormat: 'jsonl',
+        input: mockJsonLinesString,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('{"id":1}\n{"id":2}');
+    });
+
+    it('should convert JSON to YAML without query', async () => {
+      const options: CliOptions = {
+        query: undefined,
+        inputFormat: 'json',
+        outputFormat: 'yaml',
+        input: mockJsonString,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('name: Alice\nage: 30\n');
+    });
+
+    it('should convert YAML to JSON without query', async () => {
+      const options: CliOptions = {
+        query: undefined,
+        inputFormat: 'yaml',
+        outputFormat: 'compact',
+        input: mockYamlString,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('{"name":"Alice","age":30}');
     });
   });
 });
