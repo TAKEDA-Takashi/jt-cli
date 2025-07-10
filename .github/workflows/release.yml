@@ -30,7 +30,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write  # GitHub Release作成に必要
       id-token: write # npm provenance に必要
     steps:
       - uses: actions/checkout@v4
