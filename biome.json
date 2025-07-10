@@ -48,7 +48,8 @@
     }
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"]
+    "includes": ["src/**/*.ts", "tests/**/*.ts", "*.json", "*.mjs", "*.md"],
+    "experimentalScannerIgnores": ["dist/**", "coverage/**", "node_modules/**"]
   },
   "overrides": [
     {

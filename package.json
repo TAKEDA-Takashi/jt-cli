@@ -1,5 +1,5 @@
 {
-  "name": "jt",
+  "name": "@2017takeda/jt-cli",
   "version": "0.1.0",
   "description": "JSONata query and transformation tool for the command line",
   "keywords": [
@@ -25,13 +25,16 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "jt": "./dist/cli.js"
+    "jt": "./dist/jt.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "node build.mjs",
+    "build:cli": "node build.mjs --cli",
+    "build:lib": "node build.mjs --lib",
+    "build:types": "node build.mjs --types",
     "clean": "rm -rf dist coverage",
     "dev": "tsx watch src/cli.ts",
     "format": "biome format --write .",
@@ -39,7 +42,7 @@
     "lint:check": "biome check .",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",
-    "start": "node dist/cli.js",
+    "start": "node dist/jt.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
     "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
@@ -56,6 +59,7 @@
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.6",
+    "esbuild": "^0.25.6",
     "jest": "^30.0.4",
     "ts-jest": "^29.4.0",
     "tsx": "^4.19.2",
