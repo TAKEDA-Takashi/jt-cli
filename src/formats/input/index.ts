@@ -8,13 +8,13 @@ export function parseInput(input: string, format: InputFormat): unknown {
   switch (format) {
     case 'json':
       return parseJson(input);
-    
+
     case 'yaml':
       return parseYaml(input);
-    
+
     case 'jsonl':
       return parseJsonLines(input);
-    
+
     default:
       throw new JtError(
         ErrorCode.INVALID_FORMAT,

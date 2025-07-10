@@ -23,7 +23,9 @@ export function formatCsv(data: unknown): string {
   }
 
   // すべての要素がオブジェクトであることを確認
-  const nonObjects = data.filter((item) => typeof item !== 'object' || item === null || Array.isArray(item));
+  const nonObjects = data.filter(
+    (item) => typeof item !== 'object' || item === null || Array.isArray(item),
+  );
   if (nonObjects.length > 0) {
     throw new JtError(
       ErrorCode.INVALID_OUTPUT_FORMAT,
@@ -43,9 +45,9 @@ export function formatCsv(data: unknown): string {
         object: (value: unknown) => JSON.stringify(value),
         boolean: (value: boolean) => value.toString(),
       },
-      quoted_match: /[\s"]/,  // スペース、タブ、改行、ダブルクォートを含む場合はクォート
+      quoted_match: /[\s"]/, // スペース、タブ、改行、ダブルクォートを含む場合はクォート
     });
-    
+
     // 最後の改行を削除
     return csvString.trimEnd();
   } catch (error) {
@@ -64,12 +66,12 @@ export function formatCsv(data: unknown): string {
  */
 function getAllKeys(data: unknown[]): string[] {
   const keySet = new Set<string>();
-  
+
   for (const item of data) {
     if (item && typeof item === 'object' && !Array.isArray(item)) {
       Object.keys(item).forEach((key) => keySet.add(key));
     }
   }
-  
+
   return Array.from(keySet);
 }

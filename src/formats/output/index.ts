@@ -10,16 +10,16 @@ export function formatOutput(data: unknown, format: OutputFormat): string {
     case 'pretty':
     case 'compact':
       return formatJson(data, format);
-    
+
     case 'jsonl':
       return formatJsonLines(data);
-    
+
     case 'yaml':
       return formatYaml(data);
-    
+
     case 'csv':
       return formatCsv(data);
-    
+
     default:
       throw new JtError(
         ErrorCode.INVALID_OUTPUT_FORMAT,
