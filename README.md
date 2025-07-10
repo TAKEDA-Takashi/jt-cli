@@ -16,7 +16,7 @@
 ### Using npm
 
 ```bash
-npm install -g jt
+npm install -g @2017takeda/jt-cli
 ```
 
 ### Using Homebrew (coming soon)
@@ -165,8 +165,8 @@ echo '{}' | jt '$undefined('
 
 ```bash
 # Clone repository
-git clone https://github.com/TAKEDA-Takashi/jt.git
-cd jt
+git clone https://github.com/TAKEDA-Takashi/jt-cli.git
+cd jt-cli
 
 # Install dependencies
 npm install
@@ -218,6 +218,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📝 [Report issues](https://github.com/TAKEDA-Takashi/jt/issues)
-- 💬 [Discussions](https://github.com/TAKEDA-Takashi/jt/discussions)
-- 📖 [Documentation](https://github.com/TAKEDA-Takashi/jt/wiki)
+- 📝 [Report issues](https://github.com/TAKEDA-Takashi/jt-cli/issues)
+- 💬 [Discussions](https://github.com/TAKEDA-Takashi/jt-cli/discussions)
+- 📖 [Documentation](https://github.com/TAKEDA-Takashi/jt-cli/wiki)
