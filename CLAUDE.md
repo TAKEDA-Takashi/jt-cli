@@ -70,10 +70,13 @@ throw new JtError({
 #### Biome設定の遵守
 ```bash
 # 必ず実行
-npm run lint        # Biomeでのリント
+npm run lint:check  # Biomeでのリントチェック（修正なし）
+npm run lint        # Biomeでのリント（自動修正あり）
 npm run format      # Biomeでのフォーマット
 npm run typecheck   # TypeScriptの型チェック
 ```
+
+**注意**: コミット前は必ず `npm run lint:check` を実行し、自動修正なしでエラーがないことを確認すること。
 
 #### 型安全性
 - `any` 型の使用禁止（`unknown` を使用）
@@ -179,10 +182,10 @@ describe('CLI integration', () => {
 - `PATCH`: バグ修正
 
 #### リリース前チェックリスト
-- [ ] すべてのテストがパス
+- [ ] すべてのテストがパス（`npm test`）
 - [ ] カバレッジ90%以上
-- [ ] Biomeエラーなし
-- [ ] TypeScriptエラーなし
+- [ ] Biomeリントエラーなし（`npm run lint:check`）
+- [ ] TypeScriptエラーなし（`npm run typecheck`）
 - [ ] CHANGELOG.md更新
 - [ ] package.jsonのバージョン更新
 
@@ -191,8 +194,9 @@ describe('CLI integration', () => {
 #### PR要件
 1. テストを含む（TDD実践の証跡）
 2. 既存テストがすべてパス
-3. Biomeチェックをパス
-4. 適切なコミットメッセージ
+3. Biomeリントチェックをパス（`npm run lint:check`でエラーなし）
+4. TypeScriptチェックをパス（`npm run typecheck`でエラーなし）
+5. 適切なコミットメッセージ
 
 #### コミットメッセージ形式
 ```
@@ -248,7 +252,9 @@ GitHub Actionsによる自動NPM公開が設定されています：
 - [ ] `NPM_TOKEN` がGitHub Secretsに設定済み
 - [ ] package.json のバージョンとタグが一致
 - [ ] CHANGELOG.md が更新済み
-- [ ] すべてのテストがパス
+- [ ] すべてのテストがパス（`npm test`）
+- [ ] Biomeリントチェックがパス（`npm run lint:check`）
+- [ ] TypeScriptチェックがパス（`npm run typecheck`）
 
 ## 継続的改善
 
