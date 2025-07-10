@@ -57,7 +57,19 @@ jobs:
             exit 1
           fi
       
+      - name: Check if version exists on npm
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if npm view @2017takeda/jt-cli@$PACKAGE_VERSION version 2>/dev/null; then
+            echo "Version $PACKAGE_VERSION already exists on npm. Skipping publish."
+            echo "SKIP_PUBLISH=true" >> $GITHUB_ENV
+          else
+            echo "Version $PACKAGE_VERSION does not exist. Proceeding with publish."
+            echo "SKIP_PUBLISH=false" >> $GITHUB_ENV
+          fi
+      
       - name: Publish to npm
+        if: env.SKIP_PUBLISH == 'false'
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
