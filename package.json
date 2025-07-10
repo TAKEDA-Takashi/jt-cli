@@ -1,0 +1,70 @@
+{
+  "name": "jt",
+  "version": "0.1.0",
+  "description": "JSONata query and transformation tool for the command line",
+  "keywords": [
+    "jsonata",
+    "json",
+    "query",
+    "transform",
+    "cli",
+    "yaml",
+    "csv"
+  ],
+  "homepage": "https://github.com/TAKEDA-Takashi/jt#readme",
+  "bugs": {
+    "url": "https://github.com/TAKEDA-Takashi/jt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TAKEDA-Takashi/jt.git"
+  },
+  "license": "MIT",
+  "author": "TAKEDA Takashi",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "jt": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist coverage",
+    "dev": "tsx watch src/cli.ts",
+    "format": "biome format --write .",
+    "lint": "biome lint --apply .",
+    "lint:check": "biome check .",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/cli.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "csv-stringify": "^6.5.1",
+    "js-yaml": "^4.1.0",
+    "jsonata": "^2.0.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@types/jest": "^30.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.19.6",
+    "jest": "^30.0.4",
+    "ts-jest": "^29.4.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
