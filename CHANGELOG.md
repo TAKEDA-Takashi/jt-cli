@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2025-01-10
+## [1.1.0] - 2025-01-10
+
+### Added
+- Version flag tests for --version and -V options
+- Comprehensive test coverage for CLI version display functionality
+
+## [1.0.0] - 2025-01-10
 
 ### Added
 - Initial release of jt-cli
@@ -26,10 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TypeScript implementation with full type safety
 - Support for both stdin and file input
 - Extensive test suite with >80% coverage
+- Version flag support (--version, -V)
 
 ### Security
 - All dependencies are up to date
 - No known vulnerabilities
 
-[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/TAKEDA-Takashi/jt-cli/releases/tag/v0.1.0
+[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/TAKEDA-Takashi/jt-cli/releases/tag/v1.0.0
