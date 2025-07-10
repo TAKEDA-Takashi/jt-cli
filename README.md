@@ -5,6 +5,7 @@
 ## Features
 
 - 🔍 Query JSON, YAML, and JSON Lines data using JSONata expressions
+- 🔄 Format conversion between JSON, YAML, JSON Lines, and CSV (no query required)
 - 📝 Multiple output formats: Pretty JSON, Compact JSON, JSON Lines, YAML, and CSV
 - 🚀 Fast and efficient processing with streaming support
 - 💡 User-friendly error messages with helpful suggestions
@@ -38,9 +39,30 @@ cat data.json | jt '<jsonata-expression>'
 
 # With explicit input format
 jt -i yaml '<jsonata-expression>' data.yaml
+
+# Format conversion without JSONata query (new!)
+jt data.json -o yaml
+cat data.yaml | jt -o compact
 ```
 
+The JSONata expression is now optional. When omitted, `jt` acts as a format converter, parsing the input and outputting it in the specified format.
+
 ### Examples
+
+#### Format Conversion (No Query)
+```bash
+# Convert JSON to YAML
+jt data.json -o yaml
+
+# Convert YAML to JSON
+jt config.yaml -o pretty
+
+# Convert JSON to compact format
+cat data.json | jt -o compact
+
+# Convert JSON Lines to YAML
+jt events.jsonl -o yaml
+```
 
 #### Basic Query
 ```bash
