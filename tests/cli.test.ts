@@ -195,17 +195,17 @@ describe('processQuery', () => {
 describe('CLI version', () => {
   it('should display version with --version flag', () => {
     const packageJson = JSON.parse(execSync('cat package.json', { encoding: 'utf8' }));
-    
+
     const versionOutput = execSync('tsx src/cli.ts --version', { encoding: 'utf8' }).trim();
-    
+
     expect(versionOutput).toBe(packageJson.version);
   });
 
   it('should display version with -V flag', () => {
     const packageJson = JSON.parse(execSync('cat package.json', { encoding: 'utf8' }));
-    
+
     const versionOutput = execSync('tsx src/cli.ts -V', { encoding: 'utf8' }).trim();
-    
+
     expect(versionOutput).toBe(packageJson.version);
   });
 });
