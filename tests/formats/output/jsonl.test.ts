@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { formatJsonLines } from '../../../src/formats/output/jsonl';
 
 describe('formatJsonLines', () => {

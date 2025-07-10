@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ErrorCode, JtError } from '../src/errors';
 import { executeQuery } from '../src/query';
 
@@ -166,7 +167,7 @@ describe('executeQuery', () => {
       const query = '${invalid syntax}';
       try {
         await executeQuery(query, data);
-        fail('Should have thrown an error');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(JtError);
         // This specific query might throw execution error instead of syntax error
@@ -175,6 +176,29 @@ describe('executeQuery', () => {
           (error as JtError).code,
         );
         expect((error as JtError).detail).toBeDefined();
+      }
+    });
+
+    it('should classify syntax errors correctly', async () => {
+      // JSONataの構文エラーが正しく分類されることを確認
+      const syntaxErrorCases = [
+        { query: '$[', expectedDetail: 'Expected "]" before end of expression' },
+        { query: '$.test.', expectedDetail: 'Unexpected end of expression' },
+        { query: '$.(', expectedDetail: 'Expected ")" before end of expression' },
+        { query: '$.test..value', expectedDetail: 'Syntax error: ".."' },
+      ];
+
+      for (const { query, expectedDetail } of syntaxErrorCases) {
+        try {
+          await executeQuery(query, { test: 'value' });
+          expect.fail(`Should have thrown an error for query: ${query}`);
+        } catch (error) {
+          expect(error).toBeInstanceOf(JtError);
+          expect((error as JtError).code).toBe(ErrorCode.INVALID_QUERY);
+          expect((error as JtError).message).toBe('Invalid JSONata expression');
+          expect((error as JtError).detail).toBe(expectedDetail);
+          expect((error as JtError).suggestion).toBe('Check syntax at jsonata.org');
+        }
       }
     });
 
@@ -188,6 +212,19 @@ describe('executeQuery', () => {
       const data = { text: null };
       const query = '$uppercase(text)';
       await expect(executeQuery(query, data)).rejects.toThrow(JtError);
+    });
+
+    it('should classify runtime errors correctly', async () => {
+      const data = { value: 'string' };
+      const query = '$sqrt(value)';
+      try {
+        await executeQuery(query, data);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(JtError);
+        expect((error as JtError).code).toBe(ErrorCode.EXECUTION_ERROR);
+        expect((error as JtError).message).toBe('Query execution failed');
+      }
     });
   });
 

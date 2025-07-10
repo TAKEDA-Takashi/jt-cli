@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import { describe, expect, it } from 'vitest';
 import { ErrorCode, JtError } from '../../../src/errors';
 import { parseJsonLines, parseJsonLinesStream } from '../../../src/formats/input/jsonl';
 
@@ -78,7 +79,7 @@ null
 {"line": 4}`;
       try {
         parseJsonLines(input);
-        fail('Should have thrown an error');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(JtError);
         expect((error as JtError).code).toBe(ErrorCode.INVALID_INPUT);

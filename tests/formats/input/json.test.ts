@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ErrorCode, JtError } from '../../../src/errors';
 import { parseJson } from '../../../src/formats/input/json';
 
@@ -57,7 +58,7 @@ describe('parseJson', () => {
       const input = '{"name": "Alice",}';
       try {
         parseJson(input);
-        fail('Should have thrown an error');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(JtError);
         expect((error as JtError).code).toBe(ErrorCode.INVALID_INPUT);

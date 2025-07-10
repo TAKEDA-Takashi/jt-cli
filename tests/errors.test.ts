@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ErrorCode, JtError } from '../src/errors';
 
 describe('JtError', () => {

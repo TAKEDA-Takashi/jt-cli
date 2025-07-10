@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { processQuery } from '../src/cli';
 import { JtError } from '../src/errors';
 import type { CliOptions } from '../src/types';

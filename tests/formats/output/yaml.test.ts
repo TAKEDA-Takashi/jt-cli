@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { formatYaml } from '../../../src/formats/output/yaml';
 
 describe('formatYaml', () => {

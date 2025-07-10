@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { formatJson } from '../../../src/formats/output/json';
 import type { OutputFormat } from '../../../src/types';
 

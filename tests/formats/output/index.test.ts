@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { JtError } from '../../../src/errors';
 import { formatOutput } from '../../../src/formats/output';
 import type { OutputFormat } from '../../../src/types';

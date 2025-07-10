@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ErrorCode, JtError } from '../../../src/errors';
 import { parseYaml } from '../../../src/formats/input/yaml';
 
@@ -114,7 +115,7 @@ users:
 `;
       try {
         parseYaml(input);
-        fail('Should have thrown an error');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(JtError);
         expect((error as JtError).code).toBe(ErrorCode.INVALID_INPUT);
