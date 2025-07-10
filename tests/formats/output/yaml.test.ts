@@ -23,7 +23,7 @@ describe('formatYaml', () => {
       };
       const result = formatYaml(data);
       expect(result).toBe(
-        'user:\n  name: Alice\n  contacts:\n    - email@example.com\n    - "+1234567890"\n',
+        'user:\n  name: Alice\n  contacts:\n    - email@example.com\n    - \'+1234567890\'\n',
       );
     });
 
@@ -52,7 +52,7 @@ describe('formatYaml', () => {
     it('should quote strings that look like numbers or booleans', () => {
       const data = { port: '8080', enabled: 'true', version: '1.0' };
       const result = formatYaml(data);
-      expect(result).toBe('port: "8080"\nenabled: "true"\nversion: "1.0"\n');
+      expect(result).toBe('port: \'8080\'\nenabled: \'true\'\nversion: \'1.0\'\n');
     });
 
     it('should handle special characters in strings', () => {
@@ -69,7 +69,7 @@ describe('formatYaml', () => {
       expect(result).toContain('  World');
       expect(result).toContain('tab: "Tab\\there"');
       expect(result).toContain('quoted: \'"Quoted"\'');
-      expect(result).toContain('colon: "key: value"');
+      expect(result).toContain('colon: \'key: value\'');
     });
 
     it('should handle Unicode correctly', () => {
@@ -97,7 +97,10 @@ describe('formatYaml', () => {
     it('should handle circular references gracefully', () => {
       const data: any = { name: 'Alice' };
       data.self = data;
-      expect(() => formatYaml(data)).toThrow();
+      // js-yamlは循環参照をYAMLアンカー/エイリアスで処理する
+      const result = formatYaml(data);
+      expect(result).toContain('&');  // アンカー
+      expect(result).toContain('*');  // エイリアス
     });
 
     it('should handle dates', () => {

@@ -40,9 +40,9 @@
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",
     "start": "node dist/cli.js",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
