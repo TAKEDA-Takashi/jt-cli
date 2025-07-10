@@ -1,4 +1,4 @@
-import type { InputFormat, OutputFormat, CliOptions } from '../src/types';
+import type { CliOptions, InputFormat, OutputFormat } from '../src/types';
 
 describe('Type definitions', () => {
   it('should accept valid input formats', () => {
@@ -18,7 +18,7 @@ describe('Type definitions', () => {
       csvHeader: true,
       continueOnError: false,
     };
-    
+
     expect(options.input).toBe('json');
     expect(options.output).toBe('pretty');
     expect(options.csvHeader).toBe(true);
@@ -30,7 +30,7 @@ describe('Type definitions', () => {
       input: 'json',
       output: 'pretty',
     };
-    
+
     expect(minimalOptions.csvHeader).toBeUndefined();
     expect(minimalOptions.continueOnError).toBeUndefined();
   });

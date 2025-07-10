@@ -1,5 +1,5 @@
+import { ErrorCode, JtError } from '../src/errors';
 import { executeQuery } from '../src/query';
-import { JtError, ErrorCode } from '../src/errors';
 
 describe('executeQuery', () => {
   describe('basic queries', () => {
@@ -80,11 +80,7 @@ describe('executeQuery', () => {
 
   describe('aggregation functions', () => {
     it('should calculate sum', async () => {
-      const data = [
-        { value: 10 },
-        { value: 20 },
-        { value: 30 },
-      ];
+      const data = [{ value: 10 }, { value: 20 }, { value: 30 }];
       const query = '$sum(value)';
       const result = await executeQuery(query, data);
       expect(result).toBe(60);
@@ -175,7 +171,9 @@ describe('executeQuery', () => {
         expect(error).toBeInstanceOf(JtError);
         // This specific query might throw execution error instead of syntax error
         // depending on JSONata version, so accept both
-        expect([ErrorCode.INVALID_QUERY, ErrorCode.EXECUTION_ERROR]).toContain((error as JtError).code);
+        expect([ErrorCode.INVALID_QUERY, ErrorCode.EXECUTION_ERROR]).toContain(
+          (error as JtError).code,
+        );
         expect((error as JtError).detail).toBeDefined();
       }
     });

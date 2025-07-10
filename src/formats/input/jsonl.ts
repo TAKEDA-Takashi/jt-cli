@@ -1,6 +1,6 @@
-import { JtError, ErrorCode } from '../../errors';
-import { Readable } from 'stream';
-import { createInterface } from 'readline';
+import { createInterface } from 'node:readline';
+import type { Readable } from 'node:stream';
+import { ErrorCode, JtError } from '../../errors';
 
 export function parseJsonLines(input: string): unknown[] {
   if (!input) {
@@ -12,7 +12,7 @@ export function parseJsonLines(input: string): unknown[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]?.trim() || '';
-    
+
     // Skip empty lines
     if (!line) {
       continue;
@@ -48,7 +48,7 @@ export async function* parseJsonLinesStream(
   for await (const line of rl) {
     lineNumber++;
     const trimmedLine = line.trim();
-    
+
     // Skip empty lines
     if (!trimmedLine) {
       continue;

@@ -1,5 +1,5 @@
 import yaml from 'js-yaml';
-import { JtError, ErrorCode } from '../../errors';
+import { ErrorCode, JtError } from '../../errors';
 
 export function parseYaml(input: string): unknown {
   try {
@@ -8,14 +8,14 @@ export function parseYaml(input: string): unknown {
     return result;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+
     // Extract line and column information if available
     let detail = errorMessage;
     if (error instanceof yaml.YAMLException && error.mark) {
       const { line, column } = error.mark;
       detail = `${errorMessage} (line ${line + 1}, column ${column + 1})`;
     }
-    
+
     throw new JtError(
       ErrorCode.INVALID_INPUT,
       'Invalid YAML input',

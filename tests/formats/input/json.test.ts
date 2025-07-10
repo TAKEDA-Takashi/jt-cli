@@ -1,5 +1,5 @@
+import { ErrorCode, JtError } from '../../../src/errors';
 import { parseJson } from '../../../src/formats/input/json';
-import { JtError, ErrorCode } from '../../../src/errors';
 
 describe('parseJson', () => {
   describe('valid JSON', () => {

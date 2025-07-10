@@ -1,6 +1,6 @@
+import { Readable } from 'node:stream';
+import { ErrorCode, JtError } from '../../../src/errors';
 import { parseJsonLines, parseJsonLinesStream } from '../../../src/formats/input/jsonl';
-import { JtError, ErrorCode } from '../../../src/errors';
-import { Readable } from 'stream';
 
 describe('parseJsonLines', () => {
   describe('valid JSON Lines', () => {
@@ -29,11 +29,7 @@ describe('parseJsonLines', () => {
 
 {"id": 3}`;
       const result = parseJsonLines(input);
-      expect(result).toEqual([
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-      ]);
+      expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
     });
 
     it('should handle different JSON types per line', () => {
@@ -101,11 +97,7 @@ null
     it('should handle lines with different line endings', () => {
       const input = '{"unix": "lf"}\n{"windows": "crlf"}\r\n{"classic": "cr"}\r';
       const result = parseJsonLines(input);
-      expect(result).toEqual([
-        { unix: 'lf' },
-        { windows: 'crlf' },
-        { classic: 'cr' },
-      ]);
+      expect(result).toEqual([{ unix: 'lf' }, { windows: 'crlf' }, { classic: 'cr' }]);
     });
 
     it('should handle Unicode in JSON Lines', () => {
@@ -113,11 +105,7 @@ null
 {"chinese": "你好"}
 {"arabic": "مرحبا"}`;
       const result = parseJsonLines(input);
-      expect(result).toEqual([
-        { emoji: '🌍' },
-        { chinese: '你好' },
-        { arabic: 'مرحبا' },
-      ]);
+      expect(result).toEqual([{ emoji: '🌍' }, { chinese: '你好' }, { arabic: 'مرحبا' }]);
     });
   });
 });
@@ -129,37 +117,25 @@ describe('parseJsonLinesStream', () => {
 {"id": 2}
 {"id": 3}`;
       const stream = Readable.from([data]);
-      
+
       const results: unknown[] = [];
       for await (const item of parseJsonLinesStream(stream)) {
         results.push(item);
       }
-      
-      expect(results).toEqual([
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-      ]);
+
+      expect(results).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
     });
 
     it('should handle chunked data', async () => {
-      const chunks = [
-        '{"id": 1}\n{"i',
-        'd": 2}\n',
-        '{"id": 3}',
-      ];
+      const chunks = ['{"id": 1}\n{"i', 'd": 2}\n', '{"id": 3}'];
       const stream = Readable.from(chunks);
-      
+
       const results: unknown[] = [];
       for await (const item of parseJsonLinesStream(stream)) {
         results.push(item);
       }
-      
-      expect(results).toEqual([
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-      ]);
+
+      expect(results).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
     });
 
     it('should skip empty lines in stream', async () => {
@@ -169,30 +145,27 @@ describe('parseJsonLinesStream', () => {
 
 `;
       const stream = Readable.from([data]);
-      
+
       const results: unknown[] = [];
       for await (const item of parseJsonLinesStream(stream)) {
         results.push(item);
       }
-      
-      expect(results).toEqual([
-        { id: 1 },
-        { id: 2 },
-      ]);
+
+      expect(results).toEqual([{ id: 1 }, { id: 2 }]);
     });
 
     it('should throw error for invalid JSON in stream', async () => {
       const data = `{"valid": true}
 {invalid}`;
       const stream = Readable.from([data]);
-      
+
       const results: unknown[] = [];
       await expect(async () => {
         for await (const item of parseJsonLinesStream(stream)) {
           results.push(item);
         }
       }).rejects.toThrow(JtError);
-      
+
       // Should have processed the first valid line
       expect(results).toEqual([{ valid: true }]);
     });
@@ -204,10 +177,10 @@ describe('parseJsonLinesStream', () => {
 bad json
 {"valid": 3}`;
       const stream = Readable.from([data]);
-      
+
       const results: unknown[] = [];
       const errors: JtError[] = [];
-      
+
       for await (const item of parseJsonLinesStream(stream, true)) {
         if (item instanceof JtError) {
           errors.push(item);
@@ -215,12 +188,8 @@ bad json
           results.push(item);
         }
       }
-      
-      expect(results).toEqual([
-        { valid: 1 },
-        { valid: 2 },
-        { valid: 3 },
-      ]);
+
+      expect(results).toEqual([{ valid: 1 }, { valid: 2 }, { valid: 3 }]);
       expect(errors).toHaveLength(2);
       expect(errors[0]?.detail).toContain('line 2');
       expect(errors[1]?.detail).toContain('line 4');

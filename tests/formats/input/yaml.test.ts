@@ -1,5 +1,5 @@
+import { ErrorCode, JtError } from '../../../src/errors';
 import { parseYaml } from '../../../src/formats/input/yaml';
-import { JtError, ErrorCode } from '../../../src/errors';
 
 describe('parseYaml', () => {
   describe('valid YAML', () => {

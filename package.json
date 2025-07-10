@@ -35,7 +35,7 @@
     "clean": "rm -rf dist coverage",
     "dev": "tsx watch src/cli.ts",
     "format": "biome format --write .",
-    "lint": "biome lint --apply .",
+    "lint": "biome lint --write .",
     "lint:check": "biome check .",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",

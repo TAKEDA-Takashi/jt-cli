@@ -21,15 +21,15 @@ export class JtError extends Error {
 
   format(): string {
     let formatted = `Error: ${this.message}`;
-    
+
     if (this.detail) {
       formatted += `\nDetail: ${this.detail}`;
     }
-    
+
     if (this.suggestion) {
       formatted += `\nSuggestion: ${this.suggestion}`;
     }
-    
+
     return formatted;
   }
 }

@@ -1,5 +1,5 @@
 import { formatJson } from '../../../src/formats/output/json';
-import { OutputFormat } from '../../../src/types';
+import type { OutputFormat } from '../../../src/types';
 
 describe('formatJson', () => {
   describe('pretty format', () => {
@@ -76,7 +76,9 @@ describe('formatJson', () => {
         },
       };
       const result = formatJson(data, 'compact');
-      expect(result).toBe('{"user":{"name":"Alice","contacts":["email@example.com","+1234567890"]}}');
+      expect(result).toBe(
+        '{"user":{"name":"Alice","contacts":["email@example.com","+1234567890"]}}',
+      );
     });
   });
 
