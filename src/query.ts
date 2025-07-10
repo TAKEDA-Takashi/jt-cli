@@ -14,9 +14,9 @@ export async function executeQuery(query: string, data: unknown): Promise<unknow
 
     return result;
   } catch (error) {
-    // Check if it's a syntax error or runtime error
-    if (error instanceof Error) {
-      const message = error.message;
+    // JSONata throws objects with message property, not Error instances
+    if (error && typeof error === 'object' && 'message' in error) {
+      const message = (error as { message: string }).message;
 
       // JSONata syntax errors usually contain position information or syntax keywords
       if (
@@ -24,7 +24,8 @@ export async function executeQuery(query: string, data: unknown): Promise<unknow
         message.includes('Unexpected') ||
         message.includes('Expected') ||
         message.includes('syntax') ||
-        message.includes('token')
+        message.includes('token') ||
+        message.includes('Syntax error')
       ) {
         throw new JtError(
           ErrorCode.INVALID_QUERY,
@@ -41,6 +42,14 @@ export async function executeQuery(query: string, data: unknown): Promise<unknow
           'Verify data types and property paths',
         );
       }
+    } else if (error instanceof Error) {
+      // Standard Error objects
+      throw new JtError(
+        ErrorCode.EXECUTION_ERROR,
+        'Query execution failed',
+        error.message,
+        'Verify data types and property paths',
+      );
     }
 
     // Fallback for unknown errors
