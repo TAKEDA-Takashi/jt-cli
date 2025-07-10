@@ -19,8 +19,15 @@ export async function processQuery(options: CliOptions): Promise<string> {
   // 入力データをパース
   const data = parseInput(options.input, options.inputFormat);
 
-  // JSONataクエリを実行
-  const result = await executeQuery(options.query, data);
+  // JSONataクエリの有無で処理を分岐
+  let result: unknown;
+  if (options.query) {
+    // JSONataクエリを実行
+    result = await executeQuery(options.query, data);
+  } else {
+    // クエリなしの場合はパースしたデータをそのまま使用
+    result = data;
+  }
 
   // 結果をフォーマット
   return formatOutput(result, options.outputFormat);
@@ -124,7 +131,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .name('jt')
     .description(packageInfo.description)
     .version(packageInfo.version)
-    .argument('<query>', 'JSONata query expression')
+    .argument('[query]', 'JSONata query expression (optional)')
     .argument('[file]', 'Input file (JSON, YAML, or JSON Lines)')
     .option(
       '-i, --input-format <format>',
@@ -140,6 +147,10 @@ Examples:
   $ jt '$[age > 25].name' users.jsonl -o jsonl
   $ jt '\${department: $sum(salary)}' employees.json -o yaml
   
+  # Format conversion without query
+  $ jt data.json -o yaml
+  $ cat data.yaml | jt -o compact
+  
 Output formats:
   pretty   Pretty-printed JSON (default)
   compact  Compact JSON
@@ -148,15 +159,29 @@ Output formats:
   csv      CSV format (requires array of objects)
 `,
     )
-    .action(async (query: string, file?: string) => {
+    .action(async (query?: string, file?: string) => {
       try {
         const opts = program.opts<{ inputFormat?: string; outputFormat?: string }>();
 
+        // 引数の解釈を調整：queryが省略された場合、最初の引数がfile
+        let actualQuery: string | undefined = query;
+        let actualFile: string | undefined = file;
+
+        // queryがファイルパスっぽい場合（拡張子がある、または$で始まらない）
+        if (query && !file && !query.startsWith('$') && !query.includes('(')) {
+          // ファイル拡張子をチェック
+          if (query.match(/\.(json|yaml|yml|jsonl|ndjson)$/i)) {
+            actualQuery = undefined;
+            actualFile = query;
+          }
+        }
+
         // 入力を取得
-        const input = await getInput(file);
+        const input = await getInput(actualFile);
 
         // 入力形式を決定（指定されていない場合は自動検出）
-        const inputFormat = (opts.inputFormat as InputFormat) || detectInputFormat(input, file);
+        const inputFormat =
+          (opts.inputFormat as InputFormat) || detectInputFormat(input, actualFile);
 
         // 出力形式を検証
         const outputFormat = (opts.outputFormat as OutputFormat) || 'pretty';
@@ -171,7 +196,7 @@ Output formats:
 
         // クエリを実行
         const options: CliOptions = {
-          query,
+          query: actualQuery,
           inputFormat,
           outputFormat,
           input,
@@ -199,9 +224,9 @@ Output formats:
   program.parse(argv);
 }
 
+import { realpathSync } from 'node:fs';
 // CLIとして実行された場合
 import { fileURLToPath } from 'node:url';
-import { realpathSync } from 'node:fs';
 
 const currentFile = fileURLToPath(import.meta.url);
 const runningScript = process.argv[1];
