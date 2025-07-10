@@ -41,7 +41,7 @@
     "lint": "biome lint --write .",
     "lint:check": "biome check .",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "NODE_ENV=production npm run build",
     "start": "node dist/jt.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
