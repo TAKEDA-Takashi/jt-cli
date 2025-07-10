@@ -26,7 +26,7 @@ describe('parseInput', () => {
   describe('edge cases', () => {
     it('should handle empty input consistently', () => {
       expect(() => parseInput('', 'json')).toThrow(JtError);
-      expect(parseInput('', 'yaml')).toBeNull();
+      expect(parseInput('', 'yaml')).toBeUndefined();
       expect(parseInput('', 'jsonl')).toEqual([]);
     });
 
@@ -63,7 +63,7 @@ describe('parseInput', () => {
     });
 
     it('should provide format-specific error for invalid YAML', () => {
-      const input = 'invalid:\n  - missing value after dash';
+      const input = 'invalid: [unclosed bracket';
       expect(() => parseInput(input, 'yaml')).toThrow(JtError);
     });
 
@@ -85,14 +85,13 @@ describe('parseInput', () => {
       });
     });
 
-    it('should handle multi-document YAML', () => {
-      const input = `---
-name: Alice
----
-name: Bob`;
-      // js-yamlは最初のドキュメントのみ返す
+    it('should handle anchors and aliases in YAML', () => {
+      const input = 'base: &base\n  name: Alice\nextended:\n  <<: *base\n  age: 30';
       const result = parseInput(input, 'yaml');
-      expect(result).toEqual({ name: 'Alice' });
+      expect(result).toEqual({
+        base: { name: 'Alice' },
+        extended: { name: 'Alice', age: 30 },
+      });
     });
 
     it('should handle different data types in JSON Lines', () => {

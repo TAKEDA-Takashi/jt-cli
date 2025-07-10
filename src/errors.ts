@@ -5,6 +5,7 @@ export enum ErrorCode {
   OUTPUT_ERROR = 'OUTPUT_ERROR',
   FILE_NOT_FOUND = 'FILE_NOT_FOUND',
   INVALID_FORMAT = 'INVALID_FORMAT',
+  INVALID_OUTPUT_FORMAT = 'INVALID_OUTPUT_FORMAT',
 }
 
 export class JtError extends Error {
