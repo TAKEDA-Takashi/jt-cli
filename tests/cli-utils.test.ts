@@ -10,6 +10,7 @@ vi.mock('node:fs', () => ({
     }
     throw new Error('File not found');
   }),
+  realpathSync: vi.fn().mockImplementation((path: any) => path),
 }));
 vi.mock('node:tty');
 

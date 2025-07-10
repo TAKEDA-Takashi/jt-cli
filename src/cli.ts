@@ -200,6 +200,12 @@ Output formats:
 }
 
 // CLIとして実行された場合
-if (import.meta.url === `file://${process.argv[1]}`) {
+import { fileURLToPath } from 'node:url';
+import { realpathSync } from 'node:fs';
+
+const currentFile = fileURLToPath(import.meta.url);
+const runningScript = process.argv[1];
+
+if (runningScript && realpathSync(runningScript) === currentFile) {
   main().catch(console.error);
 }
