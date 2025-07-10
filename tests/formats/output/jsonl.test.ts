@@ -116,8 +116,8 @@ describe('formatJsonLines', () => {
 
       // 各行が有効なJSONであることを確認
       expect(lines).toHaveLength(2);
-      expect(JSON.parse(lines[0]!)).toEqual({ id: 1, value: 'first' });
-      expect(JSON.parse(lines[1]!)).toEqual({ id: 2, value: 'second' });
+      expect(JSON.parse(lines[0] ?? '')).toEqual({ id: 1, value: 'first' });
+      expect(JSON.parse(lines[1] ?? '')).toEqual({ id: 2, value: 'second' });
     });
 
     it('should not add trailing newline', () => {
