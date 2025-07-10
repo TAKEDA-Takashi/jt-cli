@@ -158,8 +158,9 @@ echo '{}' | jt '$undefined('
 
 ### Prerequisites
 
-- Node.js 20 or higher
+- Node.js 20 or higher (Node.js 24 recommended)
 - npm or yarn
+- nvm (recommended for managing Node.js versions)
 
 ### Setup
 
@@ -167,6 +168,9 @@ echo '{}' | jt '$undefined('
 # Clone repository
 git clone https://github.com/TAKEDA-Takashi/jt-cli.git
 cd jt-cli
+
+# Use the recommended Node.js version (if using nvm)
+nvm use  # This will use the version specified in .nvmrc (Node.js 24)
 
 # Install dependencies
 npm install
