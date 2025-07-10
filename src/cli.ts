@@ -29,7 +29,7 @@ export async function processQuery(options: CliOptions): Promise<string> {
 /**
  * 標準入力からデータを読み込む
  */
-async function readStdin(): Promise<string> {
+export async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
 
   for await (const chunk of process.stdin) {
@@ -42,7 +42,7 @@ async function readStdin(): Promise<string> {
 /**
  * ファイルまたは標準入力から入力を取得
  */
-async function getInput(filePath?: string): Promise<string> {
+export async function getInput(filePath?: string): Promise<string> {
   if (filePath) {
     try {
       return readFileSync(filePath, 'utf8');
@@ -75,7 +75,7 @@ async function getInput(filePath?: string): Promise<string> {
 /**
  * 入力形式を推測する
  */
-function detectInputFormat(input: string, filePath?: string): InputFormat {
+export function detectInputFormat(input: string, filePath?: string): InputFormat {
   // ファイル拡張子から判定
   if (filePath) {
     if (filePath.endsWith('.json')) return 'json';
