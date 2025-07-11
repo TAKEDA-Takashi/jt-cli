@@ -142,16 +142,18 @@ describe('formatJsonLines', () => {
     it('should not include color codes when NO_COLOR is set', () => {
       const env = process.env as Record<string, string | undefined>;
       env['NO_COLOR'] = '1';
-      
+
       const data = [
         { name: 'Alice', age: 30, active: true },
-        { name: 'Bob', age: 25, active: false }
+        { name: 'Bob', age: 25, active: false },
       ];
       const result = formatJsonLines(data);
-      
+
       // ANSIエスケープコードが含まれていないことを確認
       expect(result).not.toContain('\u001b[');
-      expect(result).toBe('{"name":"Alice","age":30,"active":true}\n{"name":"Bob","age":25,"active":false}');
+      expect(result).toBe(
+        '{"name":"Alice","age":30,"active":true}\n{"name":"Bob","age":25,"active":false}',
+      );
     });
 
     it.skip('should include color codes when FORCE_COLOR is set', () => {
@@ -160,13 +162,13 @@ describe('formatJsonLines', () => {
       const env = process.env as Record<string, string | undefined>;
       delete env['NO_COLOR'];
       env['FORCE_COLOR'] = '1';
-      
+
       const data = [
         { name: 'Alice', age: 30, active: true, value: null },
-        { name: 'Bob', age: 25, active: false, value: null }
+        { name: 'Bob', age: 25, active: false, value: null },
       ];
       const result = formatJsonLines(data);
-      
+
       // ANSIエスケープコードが含まれていることを確認
       expect(result).toContain('\u001b[');
     });

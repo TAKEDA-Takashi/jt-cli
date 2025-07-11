@@ -52,12 +52,12 @@ export function formatCsv(data: unknown): string {
 
     // 最後の改行を削除
     const trimmedCsv = csvString.trimEnd();
-    
+
     // 色付けが無効な場合はそのまま返す
     if (!isColorEnabled()) {
       return trimmedCsv;
     }
-    
+
     // CSVの色付け
     return colorizeCsv(trimmedCsv);
   } catch (error) {
@@ -87,29 +87,28 @@ function getAllKeys(data: unknown[]): string[] {
 }
 
 /**
- * CSV文字列を色付けする
+ * CSV文字列を色付けする（列ごとに色分け）
  */
 function colorizeCsv(csvStr: string): string {
   const lines = csvStr.split('\n');
 
-  return lines
-    .map((line, index) => {
-      // ヘッダー行（最初の行）
-      if (index === 0) {
-        // CSVのフィールドを正しく分割（クォートを考慮）
-        return line
-          .split(',')
-          .map((field) => {
-            // クォートを除去してからヘッダーを色付け
-            const unquoted = field.replace(/^"(.*)"$/, '$1');
-            return chalk.blue.bold(unquoted);
-          })
-          .join(',');
-      }
+  // 列ごとの色パレット（見やすい色の組み合わせ）
+  const columnColors = [
+    chalk.cyan, // 1列目: シアン
+    chalk.green, // 2列目: 緑
+    chalk.yellow, // 3列目: 黄
+    chalk.magenta, // 4列目: マゼンタ
+    chalk.blue, // 5列目: 青
+    chalk.red, // 6列目: 赤
+    chalk.cyanBright, // 7列目: 明るいシアン
+    chalk.greenBright, // 8列目: 明るい緑
+    chalk.yellowBright, // 9列目: 明るい黄
+    chalk.magentaBright, // 10列目: 明るいマゼンタ
+  ];
 
-      // データ行
-      // 簡易的な実装：カンマで分割（クォート内のカンマは考慮しない）
-      // より正確な実装が必要な場合は、CSVパーサーを使用
+  return lines
+    .map((line, lineIndex) => {
+      // CSVフィールドを正しく分割（クォート内のカンマを考慮）
       const fields: string[] = [];
       let currentField = '';
       let inQuotes = false;
@@ -129,43 +128,31 @@ function colorizeCsv(csvStr: string): string {
       }
 
       // 最後のフィールドを追加
-      if (currentField) {
+      if (currentField || line.endsWith(',')) {
         fields.push(currentField);
       }
 
-      // 各フィールドを色付け
-      const coloredFields = fields.map((field) => {
-        // クォートされたフィールドはそのまま
+      // 各フィールドを列番号に応じて色付け
+      const coloredFields = fields.map((field, columnIndex) => {
+        // 列番号に応じた色を選択（パレットを循環）
+        const colorFn = columnColors[columnIndex % columnColors.length] || chalk.white;
+
+        // ヘッダー行（最初の行）は太字にする
+        if (lineIndex === 0) {
+          // クォートを除去してから色付け
+          const unquoted = field.replace(/^"(.*)"$/, '$1');
+          return colorFn.bold(unquoted);
+        }
+
+        // データ行
+        // クォートされたフィールドの場合、クォート内のみ色付け
         if (field.startsWith('"') && field.endsWith('"')) {
-          // クォート内の値を取得
           const value = field.slice(1, -1);
-
-          // 数値判定（クォート内でも数値として扱う）
-          if (value.match(/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/)) {
-            return `"${chalk.cyan(value)}"`;
-          }
-
-          // 文字列
-          return `"${chalk.green(value)}"`;
+          return `"${colorFn(value)}"`;
         }
 
-        // クォートされていないフィールド
-        // 数値
-        if (field.match(/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/)) {
-          return chalk.cyan(field);
-        }
-        // 真偽値
-        else if (field === 'true' || field === 'false') {
-          return chalk.yellow(field);
-        }
-        // 空フィールド
-        else if (field === '') {
-          return field;
-        }
-        // その他（文字列）
-        else {
-          return chalk.green(field);
-        }
+        // クォートされていないフィールドはそのまま色付け
+        return colorFn(field);
       });
 
       return coloredFields.join(',');

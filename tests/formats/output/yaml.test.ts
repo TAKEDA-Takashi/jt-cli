@@ -175,10 +175,10 @@ describe('formatYaml', () => {
     it('should not include color codes when NO_COLOR is set', () => {
       const env = process.env as Record<string, string | undefined>;
       env['NO_COLOR'] = '1';
-      
+
       const data = { name: 'Alice', age: 30, active: true };
       const result = formatYaml(data);
-      
+
       // ANSIエスケープコードが含まれていないことを確認
       expect(result).not.toContain('\u001b[');
       expect(result).toBe('name: Alice\nage: 30\nactive: true\n');
@@ -190,10 +190,10 @@ describe('formatYaml', () => {
       const env = process.env as Record<string, string | undefined>;
       delete env['NO_COLOR'];
       env['FORCE_COLOR'] = '1';
-      
+
       const data = { name: 'Alice', age: 30, active: true, value: null };
       const result = formatYaml(data);
-      
+
       // ANSIエスケープコードが含まれていることを確認
       expect(result).toContain('\u001b[');
     });
