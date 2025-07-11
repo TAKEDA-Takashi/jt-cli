@@ -68,7 +68,10 @@
         "src/cli.ts",
         "src/errors.ts",
         "src/formats/output/colorize.ts",
-        "tests/colorize.test.ts"
+        "tests/colorize.test.ts",
+        "tests/formats/output/yaml.test.ts",
+        "tests/formats/output/csv.test.ts",
+        "tests/formats/output/jsonl.test.ts"
       ],
       "linter": {
         "rules": {

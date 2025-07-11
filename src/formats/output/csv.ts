@@ -1,5 +1,7 @@
 import { stringify } from 'csv-stringify/sync';
+import chalk from 'chalk';
 import { ErrorCode, JtError } from '../../errors';
+import { isColorEnabled } from './colorize';
 
 export function formatCsv(data: unknown): string {
   // Return empty string for undefined
@@ -49,7 +51,15 @@ export function formatCsv(data: unknown): string {
     });
 
     // 最後の改行を削除
-    return csvString.trimEnd();
+    const trimmedCsv = csvString.trimEnd();
+    
+    // 色付けが無効な場合はそのまま返す
+    if (!isColorEnabled()) {
+      return trimmedCsv;
+    }
+    
+    // CSVの色付け
+    return colorizeCsv(trimmedCsv);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new JtError(
@@ -74,4 +84,91 @@ function getAllKeys(data: unknown[]): string[] {
   }
 
   return Array.from(keySet);
+}
+
+/**
+ * CSV文字列を色付けする
+ */
+function colorizeCsv(csvStr: string): string {
+  const lines = csvStr.split('\n');
+
+  return lines
+    .map((line, index) => {
+      // ヘッダー行（最初の行）
+      if (index === 0) {
+        // CSVのフィールドを正しく分割（クォートを考慮）
+        return line
+          .split(',')
+          .map((field) => {
+            // クォートを除去してからヘッダーを色付け
+            const unquoted = field.replace(/^"(.*)"$/, '$1');
+            return chalk.blue.bold(unquoted);
+          })
+          .join(',');
+      }
+
+      // データ行
+      // 簡易的な実装：カンマで分割（クォート内のカンマは考慮しない）
+      // より正確な実装が必要な場合は、CSVパーサーを使用
+      const fields: string[] = [];
+      let currentField = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '"') {
+          inQuotes = !inQuotes;
+          currentField += char;
+        } else if (char === ',' && !inQuotes) {
+          fields.push(currentField);
+          currentField = '';
+        } else {
+          currentField += char;
+        }
+      }
+
+      // 最後のフィールドを追加
+      if (currentField) {
+        fields.push(currentField);
+      }
+
+      // 各フィールドを色付け
+      const coloredFields = fields.map((field) => {
+        // クォートされたフィールドはそのまま
+        if (field.startsWith('"') && field.endsWith('"')) {
+          // クォート内の値を取得
+          const value = field.slice(1, -1);
+
+          // 数値判定（クォート内でも数値として扱う）
+          if (value.match(/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/)) {
+            return `"${chalk.cyan(value)}"`;
+          }
+
+          // 文字列
+          return `"${chalk.green(value)}"`;
+        }
+
+        // クォートされていないフィールド
+        // 数値
+        if (field.match(/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/)) {
+          return chalk.cyan(field);
+        }
+        // 真偽値
+        else if (field === 'true' || field === 'false') {
+          return chalk.yellow(field);
+        }
+        // 空フィールド
+        else if (field === '') {
+          return field;
+        }
+        // その他（文字列）
+        else {
+          return chalk.green(field);
+        }
+      });
+
+      return coloredFields.join(',');
+    })
+    .join('\n');
 }
