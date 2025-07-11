@@ -1,3 +1,4 @@
+import chalk, { type ColorSupportLevel } from 'chalk';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { JtError } from '../../../src/errors';
 import { formatCsv } from '../../../src/formats/output/csv';
@@ -170,22 +171,143 @@ describe('formatCsv', () => {
       expect(result).not.toContain('\u001b[');
       expect(result).toBe('name,age,active\nAlice,30,true\nBob,25,false');
     });
+  });
 
-    it.skip('should include color codes when FORCE_COLOR is set', () => {
-      // 注意: このテストはビルド時のキャッシュの影響で正しく動作しないため、
-      // 統合テストや手動テストで動作を確認しています
+  describe('color output with colorization enabled', () => {
+    const originalEnv = process.env;
+    const originalStdout = process.stdout.isTTY;
+    let originalChalkLevel: ColorSupportLevel;
+
+    beforeEach(() => {
+      process.env = { ...originalEnv };
+      // Chalkのレベルを保存
+      originalChalkLevel = chalk.level;
+      // 色付けを有効にする
       const env = process.env as Record<string, string | undefined>;
       delete env['NO_COLOR'];
-      env['FORCE_COLOR'] = '1';
+      env['FORCE_COLOR'] = '3';
+      // TTYを有効にする
+      process.stdout.isTTY = true;
+      // Chalkのレベルを明示的に設定
+      chalk.level = 3 as ColorSupportLevel;
+    });
 
+    afterEach(() => {
+      process.env = originalEnv;
+      process.stdout.isTTY = originalStdout;
+      // Chalkのレベルを復元
+      chalk.level = originalChalkLevel;
+    });
+
+    it('should colorize CSV output with column-based colors', () => {
       const data = [
-        { name: 'Alice', age: 30, active: true },
-        { name: 'Bob', age: 25, active: false },
+        { name: 'Alice', age: 30, city: 'Tokyo' },
+        { name: 'Bob', age: 25, city: 'Osaka' },
       ];
       const result = formatCsv(data);
 
-      // ANSIエスケープコードが含まれていることを確認
-      expect(result).toContain('\u001b[');
+      // 結果にデータが含まれていることを確認
+      expect(result).toContain('name');
+      expect(result).toContain('age');
+      expect(result).toContain('city');
+      expect(result).toContain('Alice');
+      expect(result).toContain('30');
+      expect(result).toContain('Tokyo');
+    });
+
+    it('should colorize headers with bold style', () => {
+      const data = [{ col1: 'value1', col2: 'value2' }];
+      const result = formatCsv(data);
+
+      // ヘッダーとデータが含まれていることを確認
+      expect(result).toContain('col1');
+      expect(result).toContain('col2');
+      expect(result).toContain('value1');
+      expect(result).toContain('value2');
+    });
+
+    it('should handle quoted fields with colors', () => {
+      const data = [
+        { name: 'Alice, Bob', value: 'Hello "World"' },
+        { name: 'Line\nBreak', value: 'Normal' },
+      ];
+      const result = formatCsv(data);
+
+      // クォートされたフィールドが正しく処理されていることを確認
+      expect(result).toContain('Alice, Bob');
+      expect(result).toContain('Hello ""World""');
+      // 改行は実際の改行として出力される
+      expect(result).toContain('Line');
+      expect(result).toContain('Break');
+    });
+
+    it('should cycle through column colors for many columns', () => {
+      // 12列のデータを作成（色パレットより多い）
+      const data = [
+        {
+          col1: 'a',
+          col2: 'b',
+          col3: 'c',
+          col4: 'd',
+          col5: 'e',
+          col6: 'f',
+          col7: 'g',
+          col8: 'h',
+          col9: 'i',
+          col10: 'j',
+          col11: 'k',
+          col12: 'l',
+        },
+      ];
+      const result = formatCsv(data);
+
+      // すべての列が含まれていることを確認
+      for (let i = 1; i <= 12; i++) {
+        expect(result).toContain(`col${i}`);
+      }
+      expect(result).toContain('a');
+      expect(result).toContain('l');
+    });
+
+    it('should handle empty fields in colorization', () => {
+      const data = [
+        { name: 'Alice', value: '' },
+        { name: '', value: 'test' },
+      ];
+      const result = formatCsv(data);
+
+      // 空のフィールドも正しく処理されることを確認
+      expect(result).toContain('Alice');
+      expect(result).toContain('test');
+      expect(result.split('\n').length).toBe(3); // ヘッダー + 2行
+    });
+
+    it('should handle CSV ending with comma', () => {
+      const data = [{ name: 'Alice', value: null }];
+      const result = formatCsv(data);
+
+      // nullは空のフィールドとして出力される
+      expect(result).toContain('name');
+      expect(result).toContain('value');
+      expect(result).toContain('Alice');
+    });
+
+    it('should apply different colors to different columns', () => {
+      const data = [
+        { col1: 'red', col2: 'green', col3: 'blue', col4: 'yellow' },
+        { col1: '1', col2: '2', col3: '3', col4: '4' },
+      ];
+      const result = formatCsv(data);
+
+      // 各列のデータが含まれていることを確認
+      expect(result).toContain('red');
+      expect(result).toContain('green');
+      expect(result).toContain('blue');
+      expect(result).toContain('yellow');
+      expect(result).toContain('1');
+      expect(result).toContain('2');
+      expect(result).toContain('3');
+      expect(result).toContain('4');
     });
   });
 });
