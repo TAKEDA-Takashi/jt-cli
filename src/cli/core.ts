@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import packageInfo from '../../package.json';
 import type { CliContext } from '../adapters';
 import { ErrorCode, JtError } from '../errors';
 import type { CliOptions, InputFormat, OutputFormat } from '../types';
@@ -165,8 +166,8 @@ export async function parseCliArgs(argv: string[], context: CliContext): Promise
 
   program
     .name('jt')
-    .description('JSONata CLI tool')
-    .version('1.2.0')
+    .description(packageInfo.description)
+    .version(packageInfo.version)
     .argument('[query]', 'JSONata query expression (optional)')
     .argument('[file]', 'Input file (JSON, YAML, or JSON Lines)')
     .option(
