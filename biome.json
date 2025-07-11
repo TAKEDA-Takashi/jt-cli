@@ -62,6 +62,21 @@
           }
         }
       }
+    },
+    {
+      "includes": [
+        "src/cli.ts",
+        "src/errors.ts",
+        "src/formats/output/colorize.ts",
+        "tests/colorize.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useLiteralKeys": "off"
+          }
+        }
+      }
     }
   ]
 }
