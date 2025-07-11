@@ -43,6 +43,7 @@ export class MockFileSystemAdapter implements FileSystemAdapter {
 
   /**
    * テスト用: ファイルを書き込み（addFileのエイリアス）
+   * 実際のファイルシステムAPIとの一貫性のために提供
    */
   writeFile(path: string, content: string): void {
     this.files.set(path, content);

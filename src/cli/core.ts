@@ -6,6 +6,10 @@ import type { CliOptions, InputFormat, OutputFormat } from '../types';
 
 /**
  * ファイルまたは標準入力から入力を取得（依存性注入版）
+ * @param filePath - 読み込むファイルのパス（省略時は標準入力から読み込み）
+ * @param context - CLIコンテキスト（ファイルシステムと入力アダプター）
+ * @returns 読み込んだ入力データ
+ * @throws {JtError} ファイルが見つからない場合、または入力が提供されていない場合
  */
 export async function getInputWithContext(
   filePath: string | undefined,
@@ -42,6 +46,9 @@ export async function getInputWithContext(
 
 /**
  * 入力形式を推測する（依存性注入版）
+ * @param input - 入力データの内容
+ * @param filePath - ファイルパス（拡張子から形式を判定する際に使用）
+ * @returns 推測された入力形式（'json' | 'yaml' | 'jsonl' | 'csv'）
  */
 export function detectInputFormatWithContext(input: string, filePath?: string): InputFormat {
   // ファイル拡張子から判定
@@ -116,6 +123,8 @@ export function detectInputFormatWithContext(input: string, filePath?: string): 
 
 /**
  * CLIオプションを検証
+ * @param options - 検証するCLIオプション
+ * @returns 検証結果（valid: 有効かどうか、warnings: 警告メッセージの配列）
  */
 export function validateCliOptions(options: CliOptions): {
   valid: boolean;
@@ -150,6 +159,9 @@ export function validateCliOptions(options: CliOptions): {
 
 /**
  * コマンドライン引数をパース（依存性注入版）
+ * @param argv - コマンドライン引数の配列
+ * @param context - CLIコンテキスト
+ * @returns パースされたCLIオプション
  */
 export async function parseCliArgs(argv: string[], context: CliContext): Promise<CliOptions> {
   const program = new Command();
@@ -225,7 +237,7 @@ export async function parseCliArgs(argv: string[], context: CliContext): Promise
   // 入力を取得
   const input = await getInputWithContext(actualFile, context);
 
-  // 入力形式を決定（指定されていない場冗は自動検出）
+  // 入力形式を決定（指定されていない場合は自動検出）
   const inputFormat =
     (parsedOptions['inputFormat'] as InputFormat) ||
     detectInputFormatWithContext(input, actualFile);
