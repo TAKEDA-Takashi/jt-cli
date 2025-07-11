@@ -6,7 +6,7 @@
 
 - 🔍 Query JSON, YAML, and JSON Lines data using JSONata expressions
 - 🔄 Format conversion between JSON, YAML, JSON Lines, and CSV (no query required)
-- 📝 Multiple output formats: Pretty JSON, Compact JSON, JSON Lines, YAML, and CSV
+- 📝 Multiple output formats: JSON (with compact option), JSON Lines, YAML, and CSV
 - 🚀 Fast and efficient processing with streaming support
 - 💡 User-friendly error messages with helpful suggestions
 - 📖 Support for both stdin and file input
@@ -42,7 +42,7 @@ jt -i yaml '<jsonata-expression>' data.yaml
 
 # Format conversion without JSONata query (new!)
 jt data.json -o yaml
-cat data.yaml | jt -o compact
+cat data.yaml | jt -c
 ```
 
 The JSONata expression is now optional. When omitted, `jt` acts as a format converter, parsing the input and outputting it in the specified format.
@@ -55,10 +55,10 @@ The JSONata expression is now optional. When omitted, `jt` acts as a format conv
 jt data.json -o yaml
 
 # Convert YAML to JSON
-jt config.yaml -o pretty
+jt config.yaml -o json
 
 # Convert JSON to compact format
-cat data.json | jt -o compact
+cat data.json | jt -c
 
 # Convert JSON Lines to YAML
 jt events.jsonl -o yaml
@@ -112,15 +112,15 @@ jt -i jsonl '$.event' events.jsonl
 
 Control output formatting with the `-o` or `--output` option:
 
-- **pretty** (default): Formatted JSON with indentation
-- **compact**: Minified JSON
+- **json** (default): Formatted JSON with indentation
+  - Use `-c` or `--compact` flag for minified JSON
 - **jsonl**: JSON Lines (one JSON per line)
 - **yaml**: YAML format
 - **csv**: CSV format (for tabular data)
 
 ```bash
 # Compact JSON output
-jt -o compact '$.users' data.json
+jt -c '$.users' data.json
 
 # YAML output
 jt -o yaml '$.config' settings.json
