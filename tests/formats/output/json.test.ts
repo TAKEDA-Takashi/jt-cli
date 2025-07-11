@@ -123,4 +123,67 @@ describe('formatJson', () => {
 }`);
     });
   });
+
+  describe('raw string mode', () => {
+    it('should output string without quotes', () => {
+      const result = formatJson('Hello World', false, true);
+      expect(result).toBe('Hello World');
+    });
+
+    it('should output multiline string with actual newlines', () => {
+      const result = formatJson('Line 1\nLine 2\nLine 3', false, true);
+      expect(result).toBe('Line 1\nLine 2\nLine 3');
+    });
+
+    it('should output tab characters', () => {
+      const result = formatJson('Tab:\tHere', false, true);
+      expect(result).toBe('Tab:\tHere');
+    });
+
+    it('should output numbers as strings', () => {
+      expect(formatJson(42, false, true)).toBe('42');
+      expect(formatJson(3.14, false, true)).toBe('3.14');
+      expect(formatJson(-100, false, true)).toBe('-100');
+    });
+
+    it('should output booleans as strings', () => {
+      expect(formatJson(true, false, true)).toBe('true');
+      expect(formatJson(false, false, true)).toBe('false');
+    });
+
+    it('should output null as string', () => {
+      expect(formatJson(null, false, true)).toBe('null');
+    });
+
+    it('should output arrays normally in raw mode', () => {
+      const data = ['apple', 'banana'];
+      const result = formatJson(data, false, true);
+      expect(result).toBe(`[
+  "apple",
+  "banana"
+]`);
+    });
+
+    it('should output objects normally in raw mode', () => {
+      const data = { name: 'Alice' };
+      const result = formatJson(data, false, true);
+      expect(result).toBe(`{
+  "name": "Alice"
+}`);
+    });
+
+    it('should work with compact mode', () => {
+      expect(formatJson('Hello', true, true)).toBe('Hello');
+      expect(formatJson(42, true, true)).toBe('42');
+      expect(formatJson(true, true, true)).toBe('true');
+    });
+
+    it('should handle empty string', () => {
+      expect(formatJson('', false, true)).toBe('');
+    });
+
+    it('should handle Unicode in raw mode', () => {
+      expect(formatJson('こんにちは 🌍', false, true)).toBe('こんにちは 🌍');
+    });
+  });
 });

@@ -99,6 +99,7 @@ echo '[{"value": 10}, {"value": 20}, {"value": 30}]' | jt '$sum(value)'
 - **JSON** (default): Standard JSON format
 - **YAML**: YAML format (`-i yaml` or `--input yaml`)
 - **JSON Lines**: Newline-delimited JSON (`-i jsonl` or `--input jsonl`)
+- **CSV**: Comma-separated values with headers (`-i csv` or `--input csv`)
 
 ```bash
 # YAML input
@@ -106,6 +107,9 @@ jt -i yaml '$.users.name' config.yaml
 
 # JSON Lines input
 jt -i jsonl '$.event' events.jsonl
+
+# CSV input
+jt -i csv '$[age > 25]' users.csv
 ```
 
 ### Output Formats
@@ -128,6 +132,35 @@ jt -o yaml '$.config' settings.json
 # CSV output (for arrays of objects)
 jt -o csv '$' users.json
 ```
+
+### Raw String Output
+
+Use the `-r` or `--raw-string` flag to output raw strings without quotes:
+
+```bash
+# Extract string value without quotes
+echo '{"name": "Alice", "age": 30}' | jt -r '$.name'
+# Output: Alice (instead of "Alice")
+
+# Works with numbers and booleans too
+echo '{"count": 42, "active": true}' | jt -r '$.count'
+# Output: 42 (as string)
+
+# Multiline strings are output with actual newlines
+echo '{"text": "Line 1\nLine 2"}' | jt -r '$.text'
+# Output:
+# Line 1
+# Line 2
+
+# Arrays and objects are still output as JSON
+echo '{"list": [1, 2, 3]}' | jt -r '$.list'
+# Output: [1, 2, 3]
+```
+
+This option is useful for:
+- Shell scripting where you need unquoted values
+- Extracting text content without JSON formatting
+- Similar to `jq -r` for those familiar with that tool
 
 ### Advanced Features
 

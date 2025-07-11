@@ -173,4 +173,52 @@ describe('formatJsonLines', () => {
       expect(result).toContain('\u001b[');
     });
   });
+
+  describe('raw string mode', () => {
+    it('should output string values without quotes', () => {
+      const data = ['Hello', 'World', 'Test'];
+      const result = formatJsonLines(data, true);
+      expect(result).toBe('Hello\nWorld\nTest');
+    });
+
+    it('should output mixed primitives as strings', () => {
+      const data = [42, 'text', true, false, null];
+      const result = formatJsonLines(data, true);
+      expect(result).toBe('42\ntext\ntrue\nfalse\nnull');
+    });
+
+    it('should output objects normally in raw mode', () => {
+      const data = [{ name: 'Alice' }, { name: 'Bob' }];
+      const result = formatJsonLines(data, true);
+      expect(result).toBe('{"name":"Alice"}\n{"name":"Bob"}');
+    });
+
+    it('should handle single string value', () => {
+      const result = formatJsonLines('Hello World', true);
+      expect(result).toBe('Hello World');
+    });
+
+    it('should handle single number value', () => {
+      const result = formatJsonLines(3.14, true);
+      expect(result).toBe('3.14');
+    });
+
+    it('should handle multiline strings with actual newlines', () => {
+      const data = ['Line 1\nLine 2', 'Another\tTab'];
+      const result = formatJsonLines(data, true);
+      expect(result).toBe('Line 1\nLine 2\nAnother\tTab');
+    });
+
+    it('should handle empty strings', () => {
+      const data = ['', 'text', ''];
+      const result = formatJsonLines(data, true);
+      expect(result).toBe('\ntext\n');
+    });
+
+    it('should handle Unicode in raw mode', () => {
+      const data = ['こんにちは', '🌍'];
+      const result = formatJsonLines(data, true);
+      expect(result).toBe('こんにちは\n🌍');
+    });
+  });
 });

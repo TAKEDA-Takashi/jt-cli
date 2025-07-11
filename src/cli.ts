@@ -30,7 +30,7 @@ export async function processQuery(options: CliOptions): Promise<string> {
   }
 
   // 結果をフォーマット
-  return formatOutput(result, options.outputFormat, options.compact);
+  return formatOutput(result, options.outputFormat, options.compact, options.rawString);
 }
 
 /**
@@ -156,6 +156,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     )
     .option('-o, --output-format <format>', 'Output format', 'json')
     .option('-c, --compact', 'Compact JSON output (only works with -o json)')
+    .option('-r, --raw-string', 'Output raw strings without quotes (for JSON output)')
     .option('--color', 'Force color output even when piped')
     .option('--no-color', 'Disable color output')
     .addHelpText(
@@ -173,6 +174,10 @@ Examples:
   $ cat data.yaml | jt -c
   $ jt data.csv -o json
   
+  # Raw string output (no quotes)
+  $ jt -r '$.name' data.json
+  $ jt -r '$.users[*].email' data.json
+  
 Input formats:
   json     JSON format
   yaml     YAML format
@@ -187,6 +192,7 @@ Output formats:
   
 Options:
   -c, --compact    Compact JSON output (only works with -o json)
+  -r, --raw-string Output raw strings without quotes (for JSON/JSONL output)
 `,
     )
     .action(async (query?: string, file?: string) => {
@@ -196,6 +202,7 @@ Options:
           outputFormat?: string;
           color?: boolean;
           compact?: boolean;
+          rawString?: boolean;
         }>();
 
         // 引数の解釈を調整：queryが省略された場合、最初の引数がfile
@@ -250,6 +257,7 @@ Options:
           input,
           color: opts.color,
           compact: opts.compact,
+          rawString: opts.rawString,
         };
 
         const result = await processQuery(options);

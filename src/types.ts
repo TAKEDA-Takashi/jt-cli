@@ -9,4 +9,5 @@ export interface CliOptions {
   input: string;
   color?: boolean;
   compact?: boolean;
+  rawString?: boolean;
 }

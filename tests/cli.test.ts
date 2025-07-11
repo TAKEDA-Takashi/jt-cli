@@ -267,6 +267,74 @@ describe('processQuery', () => {
       expect(result).toBe('{"name":"Alice","age":30}');
     });
   });
+
+  describe('raw string mode', () => {
+    it('should output string without quotes', async () => {
+      const options: CliOptions = {
+        query: 'name',
+        inputFormat: 'json',
+        outputFormat: 'json',
+        input: mockJsonString,
+        rawString: true,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('Alice');
+    });
+
+    it('should output number as string', async () => {
+      const options: CliOptions = {
+        query: 'age',
+        inputFormat: 'json',
+        outputFormat: 'json',
+        input: mockJsonString,
+        rawString: true,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('30');
+    });
+
+    it('should work with JSONL format', async () => {
+      const options: CliOptions = {
+        query: '$.id',
+        inputFormat: 'jsonl',
+        outputFormat: 'jsonl',
+        input: mockJsonLinesString,
+        rawString: true,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('1\n2');
+    });
+
+    it('should output objects normally in raw mode', async () => {
+      const options: CliOptions = {
+        query: '$',
+        inputFormat: 'json',
+        outputFormat: 'json',
+        input: mockJsonString,
+        rawString: true,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('{\n  "name": "Alice",\n  "age": 30\n}');
+    });
+
+    it('should handle multiline strings', async () => {
+      const input = JSON.stringify({ text: 'Line 1\nLine 2' });
+      const options: CliOptions = {
+        query: 'text',
+        inputFormat: 'json',
+        outputFormat: 'json',
+        input,
+        rawString: true,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('Line 1\nLine 2');
+    });
+  });
 });
 
 describe('CLI version', () => {

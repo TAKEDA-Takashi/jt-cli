@@ -24,11 +24,18 @@ export function isColorEnabled(): boolean {
 }
 
 // JSON値を再帰的に色付け
-export function colorizeJson(data: unknown, indent = 0): string {
+export function colorizeJson(data: unknown, indent = 0, rawString?: boolean): string {
   if (!isColorEnabled()) {
     // undefinedの場合は空文字列を返す（JSON.stringifyと同じ動作）
     if (data === undefined) {
       return '';
+    }
+    // raw string mode for non-colorized output
+    if (rawString && typeof data === 'string') {
+      return data;
+    }
+    if (rawString && (typeof data === 'number' || typeof data === 'boolean' || data === null)) {
+      return String(data);
     }
     return JSON.stringify(data, null, 2);
   }
@@ -36,7 +43,7 @@ export function colorizeJson(data: unknown, indent = 0): string {
   const spaces = ' '.repeat(indent);
 
   if (data === null) {
-    return chalk.gray('null');
+    return rawString ? 'null' : chalk.gray('null');
   }
 
   if (data === undefined) {
@@ -45,15 +52,15 @@ export function colorizeJson(data: unknown, indent = 0): string {
   }
 
   if (typeof data === 'boolean') {
-    return chalk.yellow(String(data));
+    return rawString ? String(data) : chalk.yellow(String(data));
   }
 
   if (typeof data === 'number') {
-    return chalk.cyan(String(data));
+    return rawString ? String(data) : chalk.cyan(String(data));
   }
 
   if (typeof data === 'string') {
-    return chalk.green(JSON.stringify(data));
+    return rawString ? chalk.green(data) : chalk.green(JSON.stringify(data));
   }
 
   if (Array.isArray(data)) {
@@ -64,7 +71,7 @@ export function colorizeJson(data: unknown, indent = 0): string {
     const items = data
       .map((item, index) => {
         const comma = index < data.length - 1 ? ',' : '';
-        return `${spaces}  ${colorizeJson(item, indent + 2)}${comma}`;
+        return `${spaces}  ${colorizeJson(item, indent + 2, rawString)}${comma}`;
       })
       .join('\n');
 
@@ -81,7 +88,7 @@ export function colorizeJson(data: unknown, indent = 0): string {
       .map(([key, value], index) => {
         const comma = index < entries.length - 1 ? ',' : '';
         const coloredKey = chalk.blue(JSON.stringify(key));
-        const coloredValue = colorizeJson(value, indent + 2);
+        const coloredValue = colorizeJson(value, indent + 2, rawString);
         return `${spaces}  ${coloredKey}: ${coloredValue}${comma}`;
       })
       .join('\n');
@@ -94,9 +101,32 @@ export function colorizeJson(data: unknown, indent = 0): string {
 }
 
 // コンパクトフォーマット用の色付け（1行）
-export function colorizeJsonCompact(data: unknown): string {
+export function colorizeJsonCompact(data: unknown, rawString?: boolean): string {
   if (!isColorEnabled()) {
+    // raw string mode for non-colorized compact output
+    if (rawString && typeof data === 'string') {
+      return data;
+    }
+    if (rawString && (typeof data === 'number' || typeof data === 'boolean' || data === null)) {
+      return String(data);
+    }
     return JSON.stringify(data);
+  }
+
+  // raw string mode for colorized compact output
+  if (rawString) {
+    if (typeof data === 'string') {
+      return chalk.green(data);
+    }
+    if (typeof data === 'number') {
+      return chalk.cyan(String(data));
+    }
+    if (typeof data === 'boolean') {
+      return chalk.yellow(String(data));
+    }
+    if (data === null) {
+      return chalk.gray('null');
+    }
   }
 
   // 一旦通常のJSON文字列に変換

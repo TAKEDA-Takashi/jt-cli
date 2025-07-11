@@ -5,13 +5,18 @@ import { formatJson } from './json';
 import { formatJsonLines } from './jsonl';
 import { formatYaml } from './yaml';
 
-export function formatOutput(data: unknown, format: OutputFormat, compact?: boolean): string {
+export function formatOutput(
+  data: unknown,
+  format: OutputFormat,
+  compact?: boolean,
+  rawString?: boolean,
+): string {
   switch (format) {
     case 'json':
-      return formatJson(data, compact);
+      return formatJson(data, compact, rawString);
 
     case 'jsonl':
-      return formatJsonLines(data);
+      return formatJsonLines(data, rawString);
 
     case 'yaml':
       return formatYaml(data);
