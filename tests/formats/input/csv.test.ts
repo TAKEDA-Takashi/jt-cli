@@ -161,4 +161,92 @@ describe('parseCsv', () => {
       expect(result).toEqual([{ name: ' Alice ', ' age ': ' 30 ', city: ' Tokyo ' }]);
     });
   });
+
+  describe('noHeader option', () => {
+    it('should parse CSV without headers using generated column names', () => {
+      const input = 'Alice,30,Tokyo\nBob,25,Osaka';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([
+        { col1: 'Alice', col2: '30', col3: 'Tokyo' },
+        { col1: 'Bob', col2: '25', col3: 'Osaka' },
+      ]);
+    });
+
+    it('should handle empty values without headers', () => {
+      const input = 'Alice,30,\nBob,,Tokyo';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([
+        { col1: 'Alice', col2: '30', col3: '' },
+        { col1: 'Bob', col2: '', col3: 'Tokyo' },
+      ]);
+    });
+
+    it('should handle quoted fields without headers', () => {
+      const input = '"Smith, John","A person with, comma",30\n"Doe","Simple description",25';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([
+        { col1: 'Smith, John', col2: 'A person with, comma', col3: '30' },
+        { col1: 'Doe', col2: 'Simple description', col3: '25' },
+      ]);
+    });
+
+    it('should handle single column CSV without headers', () => {
+      const input = 'Alice\nBob\nCharlie';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([{ col1: 'Alice' }, { col1: 'Bob' }, { col1: 'Charlie' }]);
+    });
+
+    it('should handle many columns without headers', () => {
+      const input = 'a,b,c,d,e,f,g,h,i,j,k\n1,2,3,4,5,6,7,8,9,10,11';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([
+        {
+          col1: 'a',
+          col2: 'b',
+          col3: 'c',
+          col4: 'd',
+          col5: 'e',
+          col6: 'f',
+          col7: 'g',
+          col8: 'h',
+          col9: 'i',
+          col10: 'j',
+          col11: 'k',
+        },
+        {
+          col1: '1',
+          col2: '2',
+          col3: '3',
+          col4: '4',
+          col5: '5',
+          col6: '6',
+          col7: '7',
+          col8: '8',
+          col9: '9',
+          col10: '10',
+          col11: '11',
+        },
+      ]);
+    });
+
+    it('should throw error for empty input with noHeader', () => {
+      const input = '';
+      expect(() => parseCsv(input, true)).toThrow(JtError);
+    });
+
+    it('should handle single row CSV without headers', () => {
+      const input = 'Alice,30,Tokyo';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([{ col1: 'Alice', col2: '30', col3: 'Tokyo' }]);
+    });
+
+    it('should handle CSV with newlines in quoted fields without headers', () => {
+      const input = '"Alice","Line 1\nLine 2",30\nBob,"Single line",25';
+      const result = parseCsv(input, true);
+      expect(result).toEqual([
+        { col1: 'Alice', col2: 'Line 1\nLine 2', col3: '30' },
+        { col1: 'Bob', col2: 'Single line', col3: '25' },
+      ]);
+    });
+  });
 });

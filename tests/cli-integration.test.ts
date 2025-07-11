@@ -7,6 +7,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_PATH = join(__dirname, '..', 'src', 'cli.ts');
 const TEST_DATA_JSON = join(__dirname, 'fixtures', 'test-data.json');
 const TEST_DATA_YAML = join(__dirname, 'fixtures', 'test-data.yaml');
+const TEST_DATA_CSV = join(__dirname, 'fixtures', 'test-data.csv');
+const TEST_DATA_CSV_NO_HEADER = join(__dirname, 'fixtures', 'test-data-no-header.csv');
 
 function runCLI(args: string): string {
   try {
@@ -116,5 +118,75 @@ describe('CLI Integration - Edge Cases', () => {
     expect(output).toContain('Current format: yaml');
     // YAML出力も含まれていることを確認
     expect(output).toContain('name: Test');
+  });
+});
+
+describe('CLI Integration - CSV with --no-header', () => {
+  it('should parse CSV with headers normally', () => {
+    const output = runCLI(`${TEST_DATA_CSV} -o json`);
+    const parsed = JSON.parse(output);
+    expect(parsed).toEqual([
+      { name: 'Alice', age: '30', city: 'Tokyo' },
+      { name: 'Bob', age: '25', city: 'Osaka' },
+      { name: 'Charlie', age: '35', city: 'Kyoto' },
+    ]);
+  });
+
+  it('should parse CSV without headers using --no-header', () => {
+    const output = runCLI(`${TEST_DATA_CSV_NO_HEADER} -i csv --no-header -o json`);
+    const parsed = JSON.parse(output);
+    expect(parsed).toEqual([
+      { col1: 'Alice', col2: '30', col3: 'Tokyo' },
+      { col1: 'Bob', col2: '25', col3: 'Osaka' },
+      { col1: 'Charlie', col2: '35', col3: 'Kyoto' },
+    ]);
+  });
+
+  it('should query CSV without headers using --no-header', () => {
+    const output = runCLI(
+      `'$[col2 > "30"].col1' ${TEST_DATA_CSV_NO_HEADER} -i csv --no-header -o jsonl`,
+    );
+    expect(output).toBe('"Charlie"');
+  });
+
+  it('should convert CSV without headers to YAML', () => {
+    const output = runCLI(`${TEST_DATA_CSV_NO_HEADER} -i csv --no-header -o yaml`);
+    expect(output).toContain('col1: Alice');
+    expect(output).toContain("col2: '30'");
+    expect(output).toContain('col3: Tokyo');
+  });
+
+  it('should handle piped CSV without headers', () => {
+    const output = execSync(
+      `cat ${TEST_DATA_CSV_NO_HEADER} | tsx ${CLI_PATH} -i csv --no-header -o json -c`,
+      {
+        encoding: 'utf8',
+      },
+    ).trim();
+    const parsed = JSON.parse(output);
+    expect(parsed).toEqual([
+      { col1: 'Alice', col2: '30', col3: 'Tokyo' },
+      { col1: 'Bob', col2: '25', col3: 'Osaka' },
+      { col1: 'Charlie', col2: '35', col3: 'Kyoto' },
+    ]);
+  });
+
+  it('should ignore --no-header option for non-CSV input', () => {
+    const output = runCLI(`${TEST_DATA_JSON} --no-header -o json -c`);
+    const parsed = JSON.parse(output);
+    expect(parsed).toEqual({
+      name: 'Test',
+      items: [
+        { id: 1, value: 100 },
+        { id: 2, value: 200 },
+      ],
+    });
+  });
+
+  it('should warn when using --no-header with non-CSV format', () => {
+    const output = execSync(`tsx ${CLI_PATH} ${TEST_DATA_JSON} -i json --no-header -o json 2>&1`, {
+      encoding: 'utf8',
+    });
+    expect(output).toContain('Warning: --no-header option is only effective with CSV input format');
   });
 });
