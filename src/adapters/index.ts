@@ -7,6 +7,9 @@ export type {
   OutputAdapter,
 } from './interfaces';
 
+// Re-export types from types module for convenience
+export type { CliOptions, InputFormat, OutputFormat } from '../types';
+
 // Production adapters
 export {
   NodeEnvironmentAdapter,

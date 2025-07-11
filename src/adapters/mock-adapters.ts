@@ -42,6 +42,13 @@ export class MockFileSystemAdapter implements FileSystemAdapter {
   }
 
   /**
+   * テスト用: ファイルを書き込み（addFileのエイリアス）
+   */
+  writeFile(path: string, content: string): void {
+    this.files.set(path, content);
+  }
+
+  /**
    * テスト用: ファイルを削除
    */
   removeFile(path: string): void {
