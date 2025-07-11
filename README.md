@@ -4,7 +4,7 @@
 
 ## Features
 
-- 🔍 Query JSON, YAML, and JSON Lines data using JSONata expressions
+- 🔍 Query JSON, YAML, CSV, and JSON Lines data using JSONata expressions
 - 🔄 Format conversion between JSON, YAML, JSON Lines, and CSV (no query required)
 - 📝 Multiple output formats: JSON (with compact option), JSON Lines, YAML, and CSV
 - 🚀 Fast and efficient processing with streaming support
@@ -264,6 +264,10 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 6. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
+
+### Code Ownership
+
+This project uses [CODEOWNERS](.github/CODEOWNERS) to define responsibilities for different parts of the codebase. Code owners are automatically requested for review when pull requests modify files they own.
 
 ## License
 
