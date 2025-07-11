@@ -7,4 +7,5 @@ export interface CliOptions {
   inputFormat: InputFormat;
   outputFormat: OutputFormat;
   input: string;
+  color?: boolean;
 }

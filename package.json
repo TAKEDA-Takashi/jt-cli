@@ -49,6 +49,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "chalk": "^5.4.1",
     "commander": "^14.0.0",
     "csv-stringify": "^6.5.1",
     "js-yaml": "^4.1.0",

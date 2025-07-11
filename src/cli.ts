@@ -138,6 +138,8 @@ export async function main(argv: string[] = process.argv): Promise<void> {
       'Input format: json, yaml, jsonl (auto-detected if not specified)',
     )
     .option('-o, --output-format <format>', 'Output format', 'pretty')
+    .option('--color', 'Force color output even when piped')
+    .option('--no-color', 'Disable color output')
     .addHelpText(
       'after',
       `
@@ -161,7 +163,11 @@ Output formats:
     )
     .action(async (query?: string, file?: string) => {
       try {
-        const opts = program.opts<{ inputFormat?: string; outputFormat?: string }>();
+        const opts = program.opts<{
+          inputFormat?: string;
+          outputFormat?: string;
+          color?: boolean;
+        }>();
 
         // 引数の解釈を調整：queryが省略された場合、最初の引数がfile
         let actualQuery: string | undefined = query;
@@ -194,12 +200,19 @@ Output formats:
           );
         }
 
+        // 色付けオプションの設定
+        if (opts.color !== undefined) {
+          const env = process.env as Record<string, string | undefined>;
+          env['FORCE_COLOR'] = opts.color ? '1' : '0';
+        }
+
         // クエリを実行
         const options: CliOptions = {
           query: actualQuery,
           inputFormat,
           outputFormat,
           input,
+          color: opts.color,
         };
 
         const result = await processQuery(options);

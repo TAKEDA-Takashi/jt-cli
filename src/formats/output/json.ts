@@ -1,4 +1,5 @@
 import type { OutputFormat } from '../../types';
+import { colorizeJson, colorizeJsonCompact } from './colorize';
 
 export function formatJson(data: unknown, format: OutputFormat): string {
   // Return empty string for undefined
@@ -7,8 +8,8 @@ export function formatJson(data: unknown, format: OutputFormat): string {
   }
   switch (format) {
     case 'compact':
-      return JSON.stringify(data);
+      return colorizeJsonCompact(data);
     default:
-      return JSON.stringify(data, null, 2);
+      return colorizeJson(data);
   }
 }
