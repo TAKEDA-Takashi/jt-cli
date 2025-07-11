@@ -102,21 +102,81 @@ export function colorizeJsonCompact(data: unknown): string {
   // 一旦通常のJSON文字列に変換
   const jsonStr = JSON.stringify(data);
 
-  // 正規表現で各要素を色付け
-  return (
-    jsonStr
-      // 文字列値（エスケープされた引用符も考慮）
-      .replace(/"((?:[^"\\]|\\.)*)"/g, (match) => {
-        // キーと値を区別するために、:の前かどうかをチェック
-        return match;
-      })
-      // 数値
-      .replace(/\b(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b/g, (_match) => chalk.cyan(_match))
-      // 真偽値
-      .replace(/\b(true|false)\b/g, (_match) => chalk.yellow(_match))
-      // null
-      .replace(/\bnull\b/g, chalk.gray('null'))
-      // プロパティ名を後から色付け（簡易的な方法）
-      .replace(/"([^"]+)":/g, (_match, key) => `${chalk.blue(`"${key}"`)}:`)
-  );
+  // トークンベースのアプローチ
+  let result = '';
+  let i = 0;
+
+  while (i < jsonStr.length) {
+    const char = jsonStr[i];
+
+    // 文字列の処理
+    if (char === '"') {
+      let str = '"';
+      let j = i + 1;
+      let escaped = false;
+
+      while (j < jsonStr.length) {
+        const c = jsonStr[j];
+        str += c;
+
+        if (c === '\\' && !escaped) {
+          escaped = true;
+        } else if (c === '"' && !escaped) {
+          // 文字列の終了
+          if (j + 1 < jsonStr.length && jsonStr[j + 1] === ':') {
+            // プロパティ名
+            result += chalk.blue(str);
+          } else {
+            // 値の文字列
+            result += chalk.green(str);
+          }
+          i = j + 1;
+          break;
+        } else {
+          escaped = false;
+        }
+        j++;
+      }
+      continue;
+    }
+
+    // 数値の処理
+    if (
+      (char && /\d/.test(char)) ||
+      (char === '-' && i + 1 < jsonStr.length && /\d/.test(jsonStr[i + 1] ?? ''))
+    ) {
+      let numStr = '';
+      let j = i;
+      while (j < jsonStr.length && /[\d.eE+-]/.test(jsonStr[j] ?? '')) {
+        numStr += jsonStr[j];
+        j++;
+      }
+      result += chalk.cyan(numStr);
+      i = j;
+      continue;
+    }
+
+    // 真偽値とnullの処理
+    if (jsonStr.substr(i, 4) === 'true') {
+      result += chalk.yellow('true');
+      i += 4;
+      continue;
+    }
+    if (jsonStr.substr(i, 5) === 'false') {
+      result += chalk.yellow('false');
+      i += 5;
+      continue;
+    }
+    if (jsonStr.substr(i, 4) === 'null') {
+      result += chalk.gray('null');
+      i += 4;
+      continue;
+    }
+
+    // その他の文字
+    result += char;
+    i++;
+  }
+
+  return result;
 }
