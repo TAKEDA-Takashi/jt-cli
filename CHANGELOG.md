@@ -7,13 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.2] - 2025-01-11
-
-### Fixed
-- Update Homebrew workflow now correctly fetches git tags
-- Added retry logic for npm package availability in Homebrew workflow
-
-## [1.2.1] - 2025-01-11
+## [1.2.3] - 2025-01-11
 
 ### Added
 - Automated Homebrew formula update workflow
@@ -29,11 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - CI workflow now uses correct lint command
 - CLI now uses direct JSON import for package.json
+- Update Homebrew workflow now correctly fetches git tags
+- Added retry logic for npm package availability in Homebrew workflow
+- Removed auto-merge from update-homebrew workflow to avoid branch protection issues
 
 ### Refactored
 - Extracted CLI core logic to pure functions for better testability (Phase 2)
 - Implemented Adapters/Ports pattern for improved testability (Phase 1)
 - Significantly improved test coverage from 60.37% to 85.51%
+
+### Note
+- Versions 1.2.1 and 1.2.2 were deprecated due to release process issues
 
 ## [1.2.0] - 2025-01-11
 
@@ -82,9 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All dependencies are up to date
 - No known vulnerabilities
 
-[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.2...HEAD
-[1.2.2]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.1...v1.2.2
-[1.2.1]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.0...v1.2.1
+[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.3...HEAD
+[1.2.3]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.0...v1.2.3
 [1.2.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/TAKEDA-Takashi/jt-cli/releases/tag/v1.0.0
