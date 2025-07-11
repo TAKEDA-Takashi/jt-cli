@@ -1,5 +1,5 @@
-import yaml from 'js-yaml';
 import chalk from 'chalk';
+import yaml from 'js-yaml';
 import { isColorEnabled } from './colorize';
 
 export function formatYaml(data: unknown): string {

@@ -1,5 +1,5 @@
-import { stringify } from 'csv-stringify/sync';
 import chalk from 'chalk';
+import { stringify } from 'csv-stringify/sync';
 import { ErrorCode, JtError } from '../../errors';
 import { isColorEnabled } from './colorize';
 
