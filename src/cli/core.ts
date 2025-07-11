@@ -74,6 +74,7 @@ export function detectInputFormatWithContext(input: string, filePath?: string): 
       // CSV判定
       const firstLine = lines[0];
       // カンマが含まれていて、かつ全行のカンマ数が同じならCSV
+      // biome-ignore lint/complexity/useOptionalChain: undefinedチェック後のメソッド呼び出し
       if (firstLine && firstLine.includes(',')) {
         const firstLineCommas = (firstLine.match(/,/g) || []).length;
         const allLinesHaveSameCommas = lines.every((line) => {
@@ -224,9 +225,10 @@ export async function parseCliArgs(argv: string[], context: CliContext): Promise
   // 入力を取得
   const input = await getInputWithContext(actualFile, context);
 
-  // 入力形式を決定（指定されていない場合は自動検出）
+  // 入力形式を決定（指定されていない場冗は自動検出）
   const inputFormat =
-    (parsedOptions['inputFormat'] as InputFormat) || detectInputFormatWithContext(input, actualFile);
+    (parsedOptions['inputFormat'] as InputFormat) ||
+    detectInputFormatWithContext(input, actualFile);
 
   // 出力形式
   const outputFormat = (parsedOptions['outputFormat'] as OutputFormat) || 'json';

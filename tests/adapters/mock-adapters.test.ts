@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
+  createMockContext,
+  createMockContextWithData,
   MockEnvironmentAdapter,
   MockFileSystemAdapter,
   MockInputAdapter,
   MockOutputAdapter,
-  createMockContext,
-  createMockContextWithData,
 } from '../../src/adapters/mock-adapters';
 
 describe('MockFileSystemAdapter', () => {

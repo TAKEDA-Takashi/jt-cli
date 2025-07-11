@@ -1,8 +1,8 @@
 import { execSync } from 'node:child_process';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { main } from '../src/cli';
-import { createMockContextWithData, type MockOutputAdapter } from '../src/adapters';
 import type { CliContext } from '../src/adapters';
+import { createMockContextWithData, type MockOutputAdapter } from '../src/adapters';
+import { main } from '../src/cli';
 
 // モック用のデータ
 const mockJsonData = { name: 'Alice', age: 30 };

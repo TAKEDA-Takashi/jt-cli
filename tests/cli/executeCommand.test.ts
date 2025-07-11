@@ -1,8 +1,8 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { CliContext, CliOptions } from '../../src/adapters';
 import { createMockContext, type MockOutputAdapter } from '../../src/adapters';
 import { executeCliCommand, handleError } from '../../src/cli/executeCommand';
-import { JtError, ErrorCode } from '../../src/errors';
+import { ErrorCode, JtError } from '../../src/errors';
 
 describe('executeCliCommand', () => {
   let mockContext: CliContext;
