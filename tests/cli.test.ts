@@ -16,7 +16,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: 'name',
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: mockJsonString,
       };
 
@@ -28,8 +28,9 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: 'age',
         inputFormat: 'yaml',
-        outputFormat: 'compact',
+        outputFormat: 'json',
         input: mockYamlString,
+        compact: true,
       };
 
       const result = await processQuery(options);
@@ -40,7 +41,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: '$[id=2]',
         inputFormat: 'jsonl',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: mockJsonLinesString,
       };
 
@@ -92,7 +93,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: '$',
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: '{invalid json}',
       };
 
@@ -103,7 +104,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: '${invalid syntax}',
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: mockJsonString,
       };
 
@@ -114,7 +115,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: 'nonexistent.deeply.nested.path',
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: mockJsonString,
       };
 
@@ -152,7 +153,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: '${department: $sum(salary)}',
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input,
       };
 
@@ -170,7 +171,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: '$',
         inputFormat: 'jsonl',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: '',
       };
 
@@ -182,7 +183,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: 'nonexistent',
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: mockJsonString,
       };
 
@@ -196,7 +197,7 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: undefined,
         inputFormat: 'json',
-        outputFormat: 'pretty',
+        outputFormat: 'json',
         input: mockJsonString,
       };
 
@@ -244,8 +245,9 @@ describe('processQuery', () => {
       const options: CliOptions = {
         query: undefined,
         inputFormat: 'yaml',
-        outputFormat: 'compact',
+        outputFormat: 'json',
         input: mockYamlString,
+        compact: true,
       };
 
       const result = await processQuery(options);

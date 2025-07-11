@@ -1,19 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { JtError } from '../../../src/errors';
 import { formatOutput } from '../../../src/formats/output';
-import type { OutputFormat } from '../../../src/types';
 
 describe('formatOutput', () => {
   describe('format selection', () => {
-    it('should use JSON formatter for pretty format', () => {
+    it('should use JSON formatter for json format', () => {
       const data = { name: 'Alice', age: 30 };
-      const result = formatOutput(data, 'pretty');
+      const result = formatOutput(data, 'json');
       expect(result).toBe('{\n  "name": "Alice",\n  "age": 30\n}');
     });
 
-    it('should use JSON formatter for compact format', () => {
+    it('should use JSON formatter with compact flag', () => {
       const data = { name: 'Alice', age: 30 };
-      const result = formatOutput(data, 'compact');
+      const result = formatOutput(data, 'json', true);
       expect(result).toBe('{"name":"Alice","age":30}');
     });
 
@@ -41,8 +40,8 @@ describe('formatOutput', () => {
 
   describe('edge cases', () => {
     it('should handle undefined consistently across formats', () => {
-      expect(formatOutput(undefined, 'pretty')).toBe('');
-      expect(formatOutput(undefined, 'compact')).toBe('');
+      expect(formatOutput(undefined, 'json')).toBe('');
+      expect(formatOutput(undefined, 'json', true)).toBe('');
       expect(formatOutput(undefined, 'jsonl')).toBe('');
       expect(formatOutput(undefined, 'yaml')).toBe('');
       expect(formatOutput(undefined, 'csv')).toBe('');
@@ -50,7 +49,7 @@ describe('formatOutput', () => {
 
     it('should throw error for invalid format', () => {
       const data = { test: 'value' };
-      expect(() => formatOutput(data, 'invalid' as OutputFormat)).toThrow(JtError);
+      expect(() => formatOutput(data, 'invalid' as any)).toThrow(JtError);
     });
   });
 
@@ -76,8 +75,8 @@ describe('formatOutput', () => {
 
     it('should handle empty arrays consistently', () => {
       const data: unknown[] = [];
-      expect(formatOutput(data, 'pretty')).toBe('[]');
-      expect(formatOutput(data, 'compact')).toBe('[]');
+      expect(formatOutput(data, 'json')).toBe('[]');
+      expect(formatOutput(data, 'json', true)).toBe('[]');
       expect(formatOutput(data, 'jsonl')).toBe('');
       expect(formatOutput(data, 'yaml')).toBe('[]\n');
       expect(formatOutput(data, 'csv')).toBe('');
@@ -97,7 +96,7 @@ describe('formatOutput', () => {
       };
 
       // JSON pretty
-      const jsonResult = formatOutput(data, 'pretty');
+      const jsonResult = formatOutput(data, 'json');
       expect(jsonResult).toContain('"user": {');
       expect(jsonResult).toContain('"details": {');
 

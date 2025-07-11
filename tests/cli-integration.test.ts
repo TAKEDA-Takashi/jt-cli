@@ -41,7 +41,7 @@ describe('CLI Integration - No Query', () => {
   });
 
   it('should convert YAML to JSON without query', () => {
-    const output = runCLI(`${TEST_DATA_YAML} -o compact`);
+    const output = runCLI(`${TEST_DATA_YAML} -o json -c`);
     const parsed = JSON.parse(output);
     expect(parsed).toEqual({
       name: 'Test',
@@ -53,14 +53,14 @@ describe('CLI Integration - No Query', () => {
   });
 
   it('should format piped JSON without query', () => {
-    const output = execSync(`cat ${TEST_DATA_JSON} | tsx ${CLI_PATH} -o compact`, {
+    const output = execSync(`cat ${TEST_DATA_JSON} | tsx ${CLI_PATH} -o json -c`, {
       encoding: 'utf8',
     }).trim();
     expect(output).toBe('{"name":"Test","items":[{"id":1,"value":100},{"id":2,"value":200}]}');
   });
 
   it('should convert piped YAML to JSON without query', () => {
-    const output = execSync(`cat ${TEST_DATA_YAML} | tsx ${CLI_PATH} -o pretty`, {
+    const output = execSync(`cat ${TEST_DATA_YAML} | tsx ${CLI_PATH} -o json`, {
       encoding: 'utf8',
     }).trim();
     const parsed = JSON.parse(output);
@@ -102,7 +102,19 @@ describe('CLI Integration - Edge Cases', () => {
 
   it('should detect file when no query and has extension', () => {
     // 拡張子がある場合はファイルとして扱われる
-    const output = runCLI(`${TEST_DATA_JSON} -o compact`);
+    const output = runCLI(`${TEST_DATA_JSON} -o json -c`);
     expect(output).toBe('{"name":"Test","items":[{"id":1,"value":100},{"id":2,"value":200}]}');
+  });
+
+  it('should warn when using --compact with non-json format', () => {
+    // YAML フォーマットで --compact を使用した場合の警告
+    const output = execSync(`tsx ${CLI_PATH} ${TEST_DATA_JSON} -o yaml -c 2>&1`, {
+      encoding: 'utf8',
+    });
+    // 警告メッセージが含まれていることを確認
+    expect(output).toContain('Warning: --compact option is only effective with JSON output format');
+    expect(output).toContain('Current format: yaml');
+    // YAML出力も含まれていることを確認
+    expect(output).toContain('name: Test');
   });
 });

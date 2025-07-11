@@ -8,21 +8,21 @@ describe('Type definitions', () => {
   });
 
   it('should accept valid output formats', () => {
-    const formats: OutputFormat[] = ['pretty', 'compact', 'jsonl', 'yaml', 'csv'];
-    expect(formats).toHaveLength(5);
+    const formats: OutputFormat[] = ['json', 'jsonl', 'yaml', 'csv'];
+    expect(formats).toHaveLength(4);
   });
 
   it('should define CLI options structure', () => {
     const options: CliOptions = {
       query: '$.name',
       inputFormat: 'json',
-      outputFormat: 'pretty',
+      outputFormat: 'json',
       input: '{"name": "Alice"}',
     };
 
     expect(options.query).toBe('$.name');
     expect(options.inputFormat).toBe('json');
-    expect(options.outputFormat).toBe('pretty');
+    expect(options.outputFormat).toBe('json');
     expect(options.input).toBe('{"name": "Alice"}');
   });
 
@@ -30,7 +30,8 @@ describe('Type definitions', () => {
     const options: CliOptions = {
       query: '$',
       inputFormat: 'yaml',
-      outputFormat: 'compact',
+      outputFormat: 'json',
+      compact: true,
       input: 'name: Bob',
     };
 
