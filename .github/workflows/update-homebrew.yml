@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout jt-cli repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -31,8 +33,18 @@ jobs:
           TARBALL_URL="https://registry.npmjs.org/@2017takeda/jt-cli/-/jt-cli-${VERSION}.tgz"
           echo "TARBALL_URL=$TARBALL_URL" >> $GITHUB_OUTPUT
           
-          # Download and calculate SHA256
-          curl -sL "$TARBALL_URL" -o package.tgz
+          # Wait for npm package to be available (with retries)
+          for i in {1..10}; do
+            if curl -sfL "$TARBALL_URL" -o package.tgz; then
+              echo "Package downloaded successfully"
+              break
+            else
+              echo "Attempt $i: Package not yet available, waiting..."
+              sleep 30
+            fi
+          done
+          
+          # Calculate SHA256
           SHA256=$(sha256sum package.tgz | cut -d' ' -f1)
           echo "SHA256=$SHA256" >> $GITHUB_OUTPUT
       
