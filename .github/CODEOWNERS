@@ -1,0 +1,26 @@
+# This file defines code ownership for the jt-cli repository
+# Each line specifies a file pattern followed by one or more GitHub usernames or team names
+# For more details: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+* @TAKEDA-Takashi
+
+# Core source code
+/src/ @TAKEDA-Takashi
+
+# Tests
+/tests/ @TAKEDA-Takashi
+
+# Documentation
+*.md @TAKEDA-Takashi
+/docs/ @TAKEDA-Takashi
+
+# Configuration files
+/.github/ @TAKEDA-Takashi
+/package.json @TAKEDA-Takashi
+/package-lock.json @TAKEDA-Takashi
+/tsconfig.json @TAKEDA-Takashi
+/biome.json @TAKEDA-Takashi
+
+# CI/CD
+/.github/workflows/ @TAKEDA-Takashi
