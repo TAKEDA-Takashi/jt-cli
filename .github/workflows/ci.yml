@@ -39,7 +39,7 @@ jobs:
         run: npm ci
       
       - name: Run Biome check
-        run: npm run lint:check
+        run: npm run check
 
   typecheck:
     name: Type Check
