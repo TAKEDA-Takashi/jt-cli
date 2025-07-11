@@ -20,10 +20,11 @@
 npm install -g @2017takeda/jt-cli
 ```
 
-### Using Homebrew (coming soon)
+### Using Homebrew
 
 ```bash
-brew install jt
+brew tap TAKEDA-Takashi/tap
+brew install jt-cli
 ```
 
 ## Usage
