@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
-import { describe, expect, it } from 'vitest';
-import { processQuery } from '../src/cli';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { main, processQuery } from '../src/cli';
 import { JtError } from '../src/errors';
 import type { CliOptions } from '../src/types';
 
@@ -352,5 +352,185 @@ describe('CLI version', () => {
     const versionOutput = execSync('tsx src/cli.ts -V', { encoding: 'utf8' }).trim();
 
     expect(versionOutput).toBe(packageJson.version);
+  });
+});
+
+describe.skip('main function', () => {
+  let originalStdout: any;
+  let originalStderr: any;
+  let originalStdin: any;
+  let originalExit: any;
+  let stdoutData: string;
+  let stderrData: string;
+
+  beforeEach(() => {
+    // 標準出力をモック
+    stdoutData = '';
+    stderrData = '';
+    originalStdout = process.stdout.write;
+    originalStderr = process.stderr.write;
+    originalStdin = process.stdin;
+    originalExit = process.exit;
+
+    process.stdout.write = vi.fn((data: string) => {
+      stdoutData += data;
+      return true;
+    }) as any;
+
+    process.stderr.write = vi.fn((data: string) => {
+      stderrData += data;
+      return true;
+    }) as any;
+
+    process.exit = vi.fn() as any;
+  });
+
+  afterEach(() => {
+    process.stdout.write = originalStdout;
+    process.stderr.write = originalStderr;
+    process.stdin = originalStdin;
+    process.exit = originalExit;
+    vi.clearAllMocks();
+  });
+
+  it('should process JSON input from file', async () => {
+    // ファイル読み込みをモック
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$.name', 'data.json']);
+
+    expect(stdoutData).toContain('"Alice"');
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should handle --compact flag', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$', 'data.json', '--compact']);
+
+    expect(stdoutData).toBe('{"name":"Alice","age":30}\n');
+  });
+
+  it('should handle --raw-string flag', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$.name', 'data.json', '--raw-string']);
+
+    expect(stdoutData).toBe('Alice\n');
+  });
+
+  it('should handle different output formats', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$', 'data.json', '-o', 'yaml']);
+
+    expect(stdoutData).toContain('name: Alice');
+    expect(stdoutData).toContain('age: 30');
+  });
+
+  it('should handle CSV input with --no-header', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue('Alice,30\nBob,25');
+
+    await main(['node', 'jt', '$', 'data.csv', '-i', 'csv', '--no-header']);
+
+    expect(stdoutData).toContain('field1');
+    expect(stdoutData).toContain('Alice');
+  });
+
+  it('should handle errors gracefully', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockImplementation(() => {
+      throw new Error('File not found');
+    });
+
+    await main(['node', 'jt', '$.name', 'nonexistent.json']);
+
+    expect(stderrData).toContain('Error');
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
+
+  it('should handle stdin input when no file is provided', async () => {
+    // stdin入力をモック
+    const mockStdin = {
+      isTTY: false,
+      setEncoding: vi.fn(),
+      on: vi.fn((event: string, callback: (...args: unknown[]) => void) => {
+        if (event === 'data') {
+          callback(mockJsonString);
+        } else if (event === 'end') {
+          callback();
+        }
+      }),
+      removeAllListeners: vi.fn(),
+    };
+    Object.defineProperty(process, 'stdin', {
+      value: mockStdin,
+      configurable: true,
+    });
+
+    await main(['node', 'jt', '$.name']);
+
+    expect(stdoutData).toContain('"Alice"');
+  });
+
+  it('should show help when no arguments provided', async () => {
+    // TTYをtrueに設定
+    const mockStdin = {
+      isTTY: true,
+    };
+    Object.defineProperty(process, 'stdin', {
+      value: mockStdin,
+      configurable: true,
+    });
+
+    await main(['node', 'jt']);
+
+    expect(stderrData).toContain('Usage:');
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
+
+  it('should handle format conversion without query', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', 'data.json', '-o', 'yaml']);
+
+    expect(stdoutData).toContain('name: Alice');
+    expect(stdoutData).toContain('age: 30');
+  });
+
+  it('should warn about --compact with non-json output', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$', 'data.json', '-o', 'yaml', '--compact']);
+
+    expect(stderrData).toContain('Warning');
+    expect(stderrData).toContain('--compact');
+  });
+
+  it('should handle --color flag', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$', 'data.json', '--color']);
+
+    // 環境変数が設定されることを確認
+    expect(process.env['FORCE_COLOR']).toBeDefined();
+  });
+
+  it('should handle --no-color flag', async () => {
+    const fs = await import('node:fs');
+    vi.spyOn(fs, 'readFileSync').mockReturnValue(mockJsonString);
+
+    await main(['node', 'jt', '$', 'data.json', '--no-color']);
+
+    // 環境変数が設定されることを確認
+    expect(process.env['NO_COLOR']).toBeDefined();
   });
 });

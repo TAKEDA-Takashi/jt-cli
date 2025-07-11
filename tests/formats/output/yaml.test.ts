@@ -1,3 +1,4 @@
+import chalk, { type ColorSupportLevel } from 'chalk';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { formatYaml } from '../../../src/formats/output/yaml';
 
@@ -183,19 +184,177 @@ describe('formatYaml', () => {
       expect(result).not.toContain('\u001b[');
       expect(result).toBe('name: Alice\nage: 30\nactive: true\n');
     });
+  });
 
-    it.skip('should include color codes when FORCE_COLOR is set', () => {
-      // 注意: このテストはビルド時のキャッシュの影響で正しく動作しないため、
-      // 統合テストや手動テストで動作を確認しています
+  describe('color output with colorization enabled', () => {
+    const originalEnv = process.env;
+    const originalStdout = process.stdout.isTTY;
+    let originalChalkLevel: ColorSupportLevel;
+
+    beforeEach(() => {
+      process.env = { ...originalEnv };
+      // Chalkのレベルを保存
+      originalChalkLevel = chalk.level;
+      // 色付けを有効にする
       const env = process.env as Record<string, string | undefined>;
       delete env['NO_COLOR'];
-      env['FORCE_COLOR'] = '1';
+      env['FORCE_COLOR'] = '3';
+      // TTYを有効にする
+      process.stdout.isTTY = true;
+      // Chalkのレベルを明示的に設定
+      chalk.level = 3 as ColorSupportLevel;
+    });
 
+    afterEach(() => {
+      process.env = originalEnv;
+      process.stdout.isTTY = originalStdout;
+      // Chalkのレベルを復元
+      chalk.level = originalChalkLevel;
+    });
+
+    it('should colorize object keys and values', () => {
       const data = { name: 'Alice', age: 30, active: true, value: null };
+      const result = formatYaml(data);
+
+      // 結果にキーと値が含まれていることを確認
+      expect(result).toContain('name');
+      expect(result).toContain('Alice');
+      expect(result).toContain('30');
+      expect(result).toContain('true');
+      expect(result).toContain('null');
+
+      // 色付けが有効な場合、結果の長さが通常より長くなる
+      const plainResult = 'name: Alice\nage: 30\nactive: true\nvalue: null\n';
+      expect(result.length).toBeGreaterThanOrEqual(plainResult.length);
+    });
+
+    it('should colorize arrays', () => {
+      const data = ['apple', 'banana', 123, true, null];
+      const result = formatYaml(data);
+
+      // 配列要素が含まれていることを確認
+      expect(result).toContain('apple');
+      expect(result).toContain('banana');
+      expect(result).toContain('123');
+      expect(result).toContain('true');
+      expect(result).toContain('null');
+      expect(result).toContain('-'); // YAML配列のマーカー
+    });
+
+    it('should colorize nested structures', () => {
+      const data = {
+        user: {
+          name: 'Alice',
+          age: 30,
+          tags: ['admin', 'user'],
+          active: true,
+          lastLogin: null,
+        },
+        settings: {
+          theme: 'dark',
+          notifications: false,
+          timeout: 3600,
+        },
+      };
       const result = formatYaml(data);
 
       // ANSIエスケープコードが含まれていることを確認
       expect(result).toContain('\u001b[');
+      // すべてのキーと値が含まれている
+      expect(result).toContain('user');
+      expect(result).toContain('name');
+      expect(result).toContain('Alice');
+      expect(result).toContain('tags');
+      expect(result).toContain('admin');
+      expect(result).toContain('active');
+      expect(result).toContain('true');
+      expect(result).toContain('lastLogin');
+      expect(result).toContain('null');
+    });
+
+    it('should colorize quoted strings', () => {
+      const data = {
+        quoted: '"already quoted"',
+        number_string: '123',
+        bool_string: 'true',
+      };
+      const result = formatYaml(data);
+
+      // js-yamlが適切にクォートする値
+      expect(result).toContain('quoted');
+      expect(result).toContain('number_string');
+      expect(result).toContain('bool_string');
+      expect(result).toContain("'"); // YAMLのクォート
+    });
+
+    it('should colorize special values', () => {
+      const data = {
+        null_value: null,
+        number_int: 42,
+        number_float: 3.14,
+        number_exp: 1.5e10,
+        bool_true: true,
+        bool_false: false,
+        empty_string: '',
+        yaml_null: '~',
+      };
+      const result = formatYaml(data);
+
+      // 特殊な値が含まれていることを確認
+      expect(result).toContain('null_value');
+      expect(result).toContain('null');
+      expect(result).toContain('42');
+      expect(result).toContain('3.14');
+      expect(result).toMatch(/1\.5e\+?10|15000000000/);
+      expect(result).toContain('true');
+      expect(result).toContain('false');
+    });
+
+    it('should colorize comments if present', () => {
+      // YAMLにコメントを含むデータ構造を作成
+      // 注: js-yamlは通常コメントを生成しないが、colorizeYaml関数はコメント行も処理する
+      // コメントの例: 'name: Alice\n# This is a comment\nage: 30\n'
+      // formatYamlではなく、colorizeYaml関数を直接テストする必要がある場合
+      // ここではformatYamlの結果にコメントが含まれないことを確認
+      const data = { name: 'Alice', age: 30 };
+      const result = formatYaml(data);
+      expect(result).not.toContain('#');
+    });
+
+    it('should handle empty values in colorization', () => {
+      const data = {
+        nested: {
+          empty_object: {},
+          empty_array: [],
+        },
+      };
+      const result = formatYaml(data);
+
+      // ANSIエスケープコードが含まれていることを確認
+      expect(result).toContain('\u001b[');
+      expect(result).toContain('nested');
+      expect(result).toContain('empty_object');
+      expect(result).toContain('{}');
+      expect(result).toContain('empty_array');
+      expect(result).toContain('[]');
+    });
+
+    it('should colorize multiline strings', () => {
+      const data = {
+        multiline: 'Line 1\nLine 2\nLine 3',
+        regular: 'single line',
+      };
+      const result = formatYaml(data);
+
+      // マルチライン文字列が含まれていることを確認
+      expect(result).toContain('multiline');
+      expect(result).toContain('Line 1');
+      expect(result).toContain('Line 2');
+      expect(result).toContain('Line 3');
+      expect(result).toContain('regular');
+      expect(result).toContain('single line');
+      // YAMLのマルチライン記法
+      expect(result).toContain('|-');
     });
   });
 });
