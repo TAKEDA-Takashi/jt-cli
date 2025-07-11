@@ -5,7 +5,7 @@ import { parseJson } from './json';
 import { parseJsonLines } from './jsonl';
 import { parseYaml } from './yaml';
 
-export function parseInput(input: string, format: InputFormat): unknown {
+export function parseInput(input: string, format: InputFormat, noHeader?: boolean): unknown {
   switch (format) {
     case 'json':
       return parseJson(input);
@@ -17,7 +17,7 @@ export function parseInput(input: string, format: InputFormat): unknown {
       return parseJsonLines(input);
 
     case 'csv':
-      return parseCsv(input);
+      return parseCsv(input, noHeader);
 
     default:
       throw new JtError(

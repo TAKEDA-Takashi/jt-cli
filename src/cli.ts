@@ -17,7 +17,7 @@ const packageInfo = JSON.parse(
  */
 export async function processQuery(options: CliOptions): Promise<string> {
   // 入力データをパース
-  const data = parseInput(options.input, options.inputFormat);
+  const data = parseInput(options.input, options.inputFormat, options.noHeader);
 
   // JSONataクエリの有無で処理を分岐
   let result: unknown;
@@ -157,6 +157,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .option('-o, --output-format <format>', 'Output format', 'json')
     .option('-c, --compact', 'Compact JSON output (only works with -o json)')
     .option('-r, --raw-string', 'Output raw strings without quotes (for JSON output)')
+    .option('--no-header', 'Treat CSV input as having no headers (only works with -i csv)')
     .option('--color', 'Force color output even when piped')
     .option('--no-color', 'Disable color output')
     .addHelpText(
@@ -182,7 +183,7 @@ Input formats:
   json     JSON format
   yaml     YAML format
   jsonl    JSON Lines (one JSON per line)
-  csv      CSV format with headers
+  csv      CSV format with headers (use --no-header for headerless CSV)
   
 Output formats:
   json     Pretty-printed JSON (default)
@@ -203,6 +204,7 @@ Options:
           color?: boolean;
           compact?: boolean;
           rawString?: boolean;
+          header?: boolean;
         }>();
 
         // 引数の解釈を調整：queryが省略された場合、最初の引数がfile
@@ -249,6 +251,16 @@ Options:
           );
         }
 
+        // --no-headerオプションは、Commanderによってheader: falseとして処理される
+        const noHeader = opts.header === false;
+
+        // noHeaderオプションの検証
+        if (noHeader && inputFormat !== 'csv') {
+          console.warn(
+            `Warning: --no-header option is only effective with CSV input format. Current format: ${inputFormat}`,
+          );
+        }
+
         // クエリを実行
         const options: CliOptions = {
           query: actualQuery,
@@ -258,6 +270,7 @@ Options:
           color: opts.color,
           compact: opts.compact,
           rawString: opts.rawString,
+          noHeader,
         };
 
         const result = await processQuery(options);

@@ -10,4 +10,5 @@ export interface CliOptions {
   color?: boolean;
   compact?: boolean;
   rawString?: boolean;
+  noHeader?: boolean;
 }
