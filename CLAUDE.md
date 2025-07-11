@@ -68,15 +68,27 @@ throw new JtError({
 ### 3. コード品質基準
 
 #### Biome設定の遵守
+
+**コマンドの使い分け:**
+- `npm run format` - コードフォーマットのみ（インデント、改行など）
+- `npm run lint` - lintルールの自動修正（未使用変数の削除など）
+- `npm run check` - すべてのチェック（format + lint + import順序）修正なし
+- `npm run check:fix` - すべての自動修正を適用
+- `npm run typecheck` - TypeScriptの型チェック
+
+**コミット前の必須チェック:**
 ```bash
-# 必ず実行
-npm run lint:check  # Biomeでのリントチェック（修正なし）
-npm run lint        # Biomeでのリント（自動修正あり）
-npm run format      # Biomeでのフォーマット
-npm run typecheck   # TypeScriptの型チェック
+npm run check      # すべてのBiomeルールをチェック（修正なし）
+npm run typecheck  # TypeScriptの型チェック
 ```
 
-**注意**: コミット前は必ず `npm run lint:check` を実行し、自動修正なしでエラーがないことを確認すること。
+**エラーが出た場合:**
+```bash
+npm run check:fix  # すべての自動修正を一括適用
+# または個別に:
+npm run format     # フォーマットのみ修正
+npm run lint       # lintルールのみ修正
+```
 
 #### 型安全性
 - `any` 型の使用禁止（`unknown` を使用）
@@ -184,7 +196,7 @@ describe('CLI integration', () => {
 #### リリース前チェックリスト
 - [ ] すべてのテストがパス（`npm test`）
 - [ ] カバレッジ90%以上
-- [ ] Biomeリントエラーなし（`npm run lint:check`）
+- [ ] Biomeチェックエラーなし（`npm run check`）※format, lint, organizeImports含む
 - [ ] TypeScriptエラーなし（`npm run typecheck`）
 - [ ] CHANGELOG.md更新
 - [ ] package.jsonのバージョン更新
@@ -194,7 +206,7 @@ describe('CLI integration', () => {
 #### PR要件
 1. テストを含む（TDD実践の証跡）
 2. 既存テストがすべてパス
-3. Biomeリントチェックをパス（`npm run lint:check`でエラーなし）
+3. Biomeチェックをパス（`npm run check`でエラーなし）
 4. TypeScriptチェックをパス（`npm run typecheck`でエラーなし）
 5. 適切なコミットメッセージ
 
@@ -253,7 +265,7 @@ GitHub Actionsによる自動NPM公開が設定されています：
 - [ ] package.json のバージョンとタグが一致
 - [ ] CHANGELOG.md が更新済み
 - [ ] すべてのテストがパス（`npm test`）
-- [ ] Biomeリントチェックがパス（`npm run lint:check`）
+- [ ] Biomeチェックがパス（`npm run check`）
 - [ ] TypeScriptチェックがパス（`npm run typecheck`）
 
 ## 継続的改善
