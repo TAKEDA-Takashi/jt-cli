@@ -3,7 +3,7 @@ import { isatty } from 'node:tty';
 import { Command } from 'commander';
 import { ErrorCode, JtError } from './errors';
 import { parseInput } from './formats/input';
-import { formatOutput } from './formats/output';
+import { formatOutput } from './formats/output/index';
 import { executeQuery } from './query';
 import type { CliOptions, InputFormat, OutputFormat } from './types';
 
@@ -30,7 +30,7 @@ export async function processQuery(options: CliOptions): Promise<string> {
   }
 
   // 結果をフォーマット
-  return formatOutput(result, options.outputFormat);
+  return formatOutput(result, options.outputFormat, options.compact);
 }
 
 /**
@@ -137,7 +137,8 @@ export async function main(argv: string[] = process.argv): Promise<void> {
       '-i, --input-format <format>',
       'Input format: json, yaml, jsonl (auto-detected if not specified)',
     )
-    .option('-o, --output-format <format>', 'Output format', 'pretty')
+    .option('-o, --output-format <format>', 'Output format', 'json')
+    .option('-c, --compact', 'Compact JSON output (only works with -o json)')
     .option('--color', 'Force color output even when piped')
     .option('--no-color', 'Disable color output')
     .addHelpText(
@@ -151,14 +152,16 @@ Examples:
   
   # Format conversion without query
   $ jt data.json -o yaml
-  $ cat data.yaml | jt -o compact
+  $ cat data.yaml | jt -c
   
 Output formats:
-  pretty   Pretty-printed JSON (default)
-  compact  Compact JSON
+  json     Pretty-printed JSON (default)
   jsonl    JSON Lines (one JSON per line)
   yaml     YAML format
   csv      CSV format (requires array of objects)
+  
+Options:
+  -c, --compact    Compact JSON output (only works with -o json)
 `,
     )
     .action(async (query?: string, file?: string) => {
@@ -167,6 +170,7 @@ Output formats:
           inputFormat?: string;
           outputFormat?: string;
           color?: boolean;
+          compact?: boolean;
         }>();
 
         // 引数の解釈を調整：queryが省略された場合、最初の引数がfile
@@ -190,13 +194,13 @@ Output formats:
           (opts.inputFormat as InputFormat) || detectInputFormat(input, actualFile);
 
         // 出力形式を検証
-        const outputFormat = (opts.outputFormat as OutputFormat) || 'pretty';
-        if (!['pretty', 'compact', 'jsonl', 'yaml', 'csv'].includes(outputFormat)) {
+        const outputFormat = (opts.outputFormat as OutputFormat) || 'json';
+        if (!['json', 'jsonl', 'yaml', 'csv'].includes(outputFormat)) {
           throw new JtError(
             ErrorCode.INVALID_FORMAT,
             `Invalid output format: ${outputFormat}`,
             undefined,
-            'Use one of: pretty, compact, jsonl, yaml, csv',
+            'Use one of: json, jsonl, yaml, csv',
           );
         }
 
@@ -206,6 +210,13 @@ Output formats:
           env['FORCE_COLOR'] = opts.color ? '1' : '0';
         }
 
+        // compactオプションの検証
+        if (opts.compact && outputFormat !== 'json') {
+          console.warn(
+            `Warning: --compact option is only effective with JSON output format. Current format: ${outputFormat}`,
+          );
+        }
+
         // クエリを実行
         const options: CliOptions = {
           query: actualQuery,
@@ -213,6 +224,7 @@ Output formats:
           outputFormat,
           input,
           color: opts.color,
+          compact: opts.compact,
         };
 
         const result = await processQuery(options);

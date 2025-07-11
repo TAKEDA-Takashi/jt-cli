@@ -1,6 +1,6 @@
 export type InputFormat = 'json' | 'yaml' | 'jsonl';
 
-export type OutputFormat = 'pretty' | 'compact' | 'jsonl' | 'yaml' | 'csv';
+export type OutputFormat = 'json' | 'jsonl' | 'yaml' | 'csv';
 
 export interface CliOptions {
   query?: string;
@@ -8,4 +8,5 @@ export interface CliOptions {
   outputFormat: OutputFormat;
   input: string;
   color?: boolean;
+  compact?: boolean;
 }

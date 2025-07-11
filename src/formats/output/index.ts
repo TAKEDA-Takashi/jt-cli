@@ -5,11 +5,10 @@ import { formatJson } from './json';
 import { formatJsonLines } from './jsonl';
 import { formatYaml } from './yaml';
 
-export function formatOutput(data: unknown, format: OutputFormat): string {
+export function formatOutput(data: unknown, format: OutputFormat, compact?: boolean): string {
   switch (format) {
-    case 'pretty':
-    case 'compact':
-      return formatJson(data, format);
+    case 'json':
+      return formatJson(data, compact);
 
     case 'jsonl':
       return formatJsonLines(data);
@@ -25,7 +24,7 @@ export function formatOutput(data: unknown, format: OutputFormat): string {
         ErrorCode.INVALID_OUTPUT_FORMAT,
         'Invalid output format',
         `Format: ${format}`,
-        'Use one of: pretty, compact, jsonl, yaml, csv',
+        'Use one of: json, jsonl, yaml, csv',
       );
   }
 }
