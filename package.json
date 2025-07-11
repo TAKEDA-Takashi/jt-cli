@@ -1,6 +1,6 @@
 {
   "name": "@2017takeda/jt-cli",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "JSONata query and transformation tool for the command line",
   "keywords": [
     "jsonata",

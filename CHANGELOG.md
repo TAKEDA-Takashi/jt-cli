@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-01-11
+
+### Added
+- Automated Homebrew formula update workflow
+- CODEOWNERS file for better code ownership management
+- CONTRIBUTING.md with project contribution guidelines
+
+### Changed
+- Improved code documentation based on PR review feedback
+- Renamed lint:check command to check for better clarity
+- Applied import organization with Biome organizeImports
+- Enhanced build configuration with specific file suppressions
+
+### Fixed
+- CI workflow now uses correct lint command
+- CLI now uses direct JSON import for package.json
+
+### Refactored
+- Extracted CLI core logic to pure functions for better testability (Phase 2)
+- Implemented Adapters/Ports pattern for improved testability (Phase 1)
+- Significantly improved test coverage from 60.37% to 85.51%
+
 ## [1.2.0] - 2025-01-11
 
 ### Added
@@ -54,7 +76,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All dependencies are up to date
 - No known vulnerabilities
 
-[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/TAKEDA-Takashi/jt-cli/releases/tag/v1.0.0
