@@ -66,8 +66,10 @@
     {
       "includes": [
         "src/cli.ts",
+        "src/cli/core.ts",
         "src/errors.ts",
         "src/formats/output/colorize.ts",
+        "tests/adapters/node-adapters.test.ts",
         "tests/colorize.test.ts",
         "tests/formats/output/yaml.test.ts",
         "tests/formats/output/csv.test.ts",
@@ -77,6 +79,16 @@
         "rules": {
           "complexity": {
             "useLiteralKeys": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["tests/cli.test.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
           }
         }
       }
