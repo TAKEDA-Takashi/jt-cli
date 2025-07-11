@@ -1,0 +1,87 @@
+name: Update Homebrew Formula
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+
+jobs:
+  update-homebrew:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout jt-cli repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      
+      - name: Get release information
+        id: release-info
+        run: |
+          # Get the latest release tag
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          VERSION=${LATEST_TAG#v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Get package tarball URL from npm
+          TARBALL_URL="https://registry.npmjs.org/@2017takeda/jt-cli/-/jt-cli-${VERSION}.tgz"
+          echo "TARBALL_URL=$TARBALL_URL" >> $GITHUB_OUTPUT
+          
+          # Download and calculate SHA256
+          curl -sL "$TARBALL_URL" -o package.tgz
+          SHA256=$(sha256sum package.tgz | cut -d' ' -f1)
+          echo "SHA256=$SHA256" >> $GITHUB_OUTPUT
+      
+      - name: Checkout homebrew-tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: TAKEDA-Takashi/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+      
+      - name: Update Formula
+        working-directory: homebrew-tap
+        run: |
+          VERSION="${{ steps.release-info.outputs.VERSION }}"
+          TARBALL_URL="${{ steps.release-info.outputs.TARBALL_URL }}"
+          SHA256="${{ steps.release-info.outputs.SHA256 }}"
+          
+          # Update the formula file
+          sed -i "s|url \".*\"|url \"${TARBALL_URL}\"|" Formula/jt-cli.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${SHA256}\"|" Formula/jt-cli.rb
+          
+          # Verify the changes
+          echo "Updated formula:"
+          grep -E "(url|sha256)" Formula/jt-cli.rb
+      
+      - name: Create Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+          commit-message: "chore: update jt-cli to version ${{ steps.release-info.outputs.VERSION }}"
+          title: "Update jt-cli to version ${{ steps.release-info.outputs.VERSION }}"
+          body: |
+            Automated update of jt-cli formula to version ${{ steps.release-info.outputs.VERSION }}.
+            
+            - Updated tarball URL
+            - Updated SHA256 checksum
+            
+            This PR was automatically created by the jt-cli release workflow.
+          branch: update-jt-cli-${{ steps.release-info.outputs.VERSION }}
+          delete-branch: true
+      
+      - name: Enable auto-merge
+        if: steps.create-pr.outputs.pull-request-number
+        run: |
+          cd homebrew-tap
+          gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} \
+            --auto --merge \
+            --repo TAKEDA-Takashi/homebrew-tap
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
