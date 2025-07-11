@@ -88,12 +88,15 @@ jobs:
           branch: update-jt-cli-${{ steps.release-info.outputs.VERSION }}
           delete-branch: true
       
-      - name: Enable auto-merge
+      - name: Merge PR
         if: steps.create-pr.outputs.pull-request-number
         run: |
           cd homebrew-tap
+          # Wait a moment for PR to be ready
+          sleep 5
+          # Directly merge the PR without auto-merge
           gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} \
-            --auto --merge \
+            --merge \
             --repo TAKEDA-Takashi/homebrew-tap
         env:
           GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
