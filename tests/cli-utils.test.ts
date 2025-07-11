@@ -144,6 +144,10 @@ describe('CLI Utility Functions', () => {
       expect(detectInputFormat('any content', 'logs.ndjson')).toBe('jsonl');
     });
 
+    it('should detect CSV format from .csv extension', () => {
+      expect(detectInputFormat('any content', 'data.csv')).toBe('csv');
+    });
+
     it('should detect JSON Lines from multi-line JSON content', () => {
       const content = '{"id": 1}\n{"id": 2}\n{"id": 3}';
       expect(detectInputFormat(content)).toBe('jsonl');
@@ -162,6 +166,21 @@ describe('CLI Utility Functions', () => {
     it('should detect JSON Lines with mixed valid JSON values', () => {
       const content = '{"obj": true}\n[1, 2, 3]\n"string"\ntrue\nnull\n42';
       expect(detectInputFormat(content)).toBe('jsonl');
+    });
+
+    it('should detect CSV from comma-separated content with headers', () => {
+      const content = 'name,age,city\nAlice,30,Tokyo\nBob,25,Osaka';
+      expect(detectInputFormat(content)).toBe('csv');
+    });
+
+    it('should detect CSV with quoted fields', () => {
+      const content = 'name,description\n"Smith, John","A person with, comma"\n"Doe","Simple"';
+      expect(detectInputFormat(content)).toBe('csv');
+    });
+
+    it('should prioritize CSV over JSONL for comma-separated content', () => {
+      const content = 'id,value\n1,100\n2,200';
+      expect(detectInputFormat(content)).toBe('csv');
     });
 
     it('should default to YAML for ambiguous content', () => {

@@ -9,6 +9,7 @@ const mockJsonData = { name: 'Alice', age: 30 };
 const mockJsonString = JSON.stringify(mockJsonData);
 const mockYamlString = 'name: Alice\nage: 30';
 const mockJsonLinesString = '{"id": 1}\n{"id": 2}';
+const mockCsvString = 'name,age,city\nAlice,30,Tokyo\nBob,25,Osaka';
 
 describe('processQuery', () => {
   describe('basic query execution', () => {
@@ -47,6 +48,18 @@ describe('processQuery', () => {
 
       const result = await processQuery(options);
       expect(result).toBe('{\n  "id": 2\n}');
+    });
+
+    it('should process CSV input with query', async () => {
+      const options: CliOptions = {
+        query: '$[age="30"]',
+        inputFormat: 'csv',
+        outputFormat: 'json',
+        input: mockCsvString,
+      };
+
+      const result = await processQuery(options);
+      expect(result).toBe('{\n  "name": "Alice",\n  "age": "30",\n  "city": "Tokyo"\n}');
     });
   });
 

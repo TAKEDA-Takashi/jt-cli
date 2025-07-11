@@ -22,6 +22,15 @@ describe('parseInput', () => {
       const result = parseInput(input, 'jsonl');
       expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
     });
+
+    it('should use CSV parser for csv format', () => {
+      const input = 'name,age\nAlice,30\nBob,25';
+      const result = parseInput(input, 'csv');
+      expect(result).toEqual([
+        { name: 'Alice', age: '30' },
+        { name: 'Bob', age: '25' },
+      ]);
+    });
   });
 
   describe('edge cases', () => {
@@ -29,6 +38,7 @@ describe('parseInput', () => {
       expect(() => parseInput('', 'json')).toThrow(JtError);
       expect(parseInput('', 'yaml')).toBeUndefined();
       expect(parseInput('', 'jsonl')).toEqual([]);
+      expect(() => parseInput('', 'csv')).toThrow(JtError);
     });
 
     it('should throw error for invalid format', () => {
@@ -71,6 +81,11 @@ describe('parseInput', () => {
     it('should provide format-specific error for invalid JSON Lines', () => {
       const input = '{"valid": true}\n{invalid json}';
       expect(() => parseInput(input, 'jsonl')).toThrow(JtError);
+    });
+
+    it('should provide format-specific error for invalid CSV', () => {
+      const input = 'name,age\n"unclosed quote';
+      expect(() => parseInput(input, 'csv')).toThrow(JtError);
     });
   });
 
@@ -121,6 +136,9 @@ describe('parseInput', () => {
         { greeting: 'こんにちは' },
         { emoji: '🌍' },
       ]);
+
+      const csvInput = 'greeting,emoji\nこんにちは,🌍';
+      expect(parseInput(csvInput, 'csv')).toEqual([{ greeting: 'こんにちは', emoji: '🌍' }]);
     });
   });
 });

@@ -88,6 +88,7 @@ export function detectInputFormat(input: string, filePath?: string): InputFormat
     if (filePath.endsWith('.json')) return 'json';
     if (filePath.endsWith('.yaml') || filePath.endsWith('.yml')) return 'yaml';
     if (filePath.endsWith('.jsonl') || filePath.endsWith('.ndjson')) return 'jsonl';
+    if (filePath.endsWith('.csv')) return 'csv';
   }
 
   // 内容から判定
@@ -96,6 +97,22 @@ export function detectInputFormat(input: string, filePath?: string): InputFormat
   // JSON Lines: 複数行でそれぞれがJSONっぽい
   if (trimmed.includes('\n')) {
     const lines = trimmed.split('\n').filter((line) => line.trim());
+
+    // CSV: カンマ区切りで、全行が同じ数のカンマを持つ
+    if (lines.length > 0 && lines[0]) {
+      const firstLineCommas = (lines[0].match(/,/g) || []).length;
+      if (
+        firstLineCommas > 0 &&
+        lines.every((line) => {
+          // クォート内のカンマは無視する簡易チェック
+          const outsideQuotes = line.replace(/"[^"]*"/g, '');
+          return (outsideQuotes.match(/,/g) || []).length === firstLineCommas;
+        })
+      ) {
+        return 'csv';
+      }
+    }
+
     if (
       lines.length > 1 &&
       lines.every((line) => {
@@ -135,7 +152,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .argument('[file]', 'Input file (JSON, YAML, or JSON Lines)')
     .option(
       '-i, --input-format <format>',
-      'Input format: json, yaml, jsonl (auto-detected if not specified)',
+      'Input format: json, yaml, jsonl, csv (auto-detected if not specified)',
     )
     .option('-o, --output-format <format>', 'Output format', 'json')
     .option('-c, --compact', 'Compact JSON output (only works with -o json)')
@@ -149,10 +166,18 @@ Examples:
   $ cat data.yaml | jt '$.items[*].price'
   $ jt '$[age > 25].name' users.jsonl -o jsonl
   $ jt '\${department: $sum(salary)}' employees.json -o yaml
+  $ jt '$' data.csv
   
   # Format conversion without query
   $ jt data.json -o yaml
   $ cat data.yaml | jt -c
+  $ jt data.csv -o json
+  
+Input formats:
+  json     JSON format
+  yaml     YAML format
+  jsonl    JSON Lines (one JSON per line)
+  csv      CSV format with headers
   
 Output formats:
   json     Pretty-printed JSON (default)
@@ -180,7 +205,7 @@ Options:
         // queryがファイルパスっぽい場合（拡張子がある、または$で始まらない）
         if (query && !file && !query.startsWith('$') && !query.includes('(')) {
           // ファイル拡張子をチェック
-          if (query.match(/\.(json|yaml|yml|jsonl|ndjson)$/i)) {
+          if (query.match(/\.(json|yaml|yml|jsonl|ndjson|csv)$/i)) {
             actualQuery = undefined;
             actualFile = query;
           }

@@ -1,4 +1,4 @@
-export type InputFormat = 'json' | 'yaml' | 'jsonl';
+export type InputFormat = 'json' | 'yaml' | 'jsonl' | 'csv';
 
 export type OutputFormat = 'json' | 'jsonl' | 'yaml' | 'csv';
 
