@@ -8,6 +8,18 @@
 2. GitHub Secretsに `NPM_TOKEN` が設定されていること
 3. mainブランチが最新の状態であること
 
+## リリース前チェックリスト
+
+リリース前に以下の項目を必ず確認してください：
+
+- [ ] すべてのテストがパス（`npm test`）
+- [ ] Biomeリントチェックがパス（`npm run lint:check`）  
+- [ ] TypeScriptチェックがパス（`npm run typecheck`）
+- [ ] ビルドが成功（`npm run build`）
+- [ ] CHANGELOG.mdのUnreleasedセクションが更新済み
+- [ ] 新機能のドキュメント（README.md）が更新済み
+- [ ] 破壊的変更がある場合、移行ガイドを記載
+
 ## リリース手順
 
 ### 1. 変更内容の確認
@@ -23,7 +35,19 @@ npm run lint:check
 npm run typecheck
 ```
 
-### 2. バージョンの更新
+### 2. CHANGELOG.mdの更新
+
+リリース前に必ずCHANGELOG.mdを更新します：
+
+```bash
+# 最後のリリース以降のコミットを確認
+git log v$(node -p "require('./package.json').version")..HEAD --oneline
+
+# CHANGELOG.mdのUnreleasedセクションに変更内容を記載
+# 形式: Added/Changed/Fixed/Removed/Security
+```
+
+### 3. バージョンの更新
 
 ```bash
 # パッチリリース (0.1.0 → 0.1.1)
@@ -41,7 +65,7 @@ npm version major
 - Git コミットを作成
 - バージョンタグを作成（例: v0.1.1）
 
-### 3. 変更をプッシュ
+### 4. 変更をプッシュ
 
 ```bash
 # コミットとタグをプッシュ
@@ -49,7 +73,7 @@ git push origin main
 git push origin --tags
 ```
 
-### 4. 自動リリースの確認
+### 5. 自動リリースの確認
 
 タグのプッシュにより、GitHub Actionsが自動的に：
 1. すべてのテストを実行
@@ -105,12 +129,45 @@ git push origin --tags
 - **MINOR (x.1.0)**: 新機能追加、後方互換性あり
 - **MAJOR (1.0.0)**: 破壊的変更、後方互換性なし
 
-## リリースノート
+## リリースノート作成ガイドライン
 
-各リリースでは、以下の情報を含めることを推奨：
+### CHANGELOGのカテゴリ
 
-- 新機能
-- バグ修正
-- 破壊的変更（ある場合）
+Keep a Changelogの形式に従い、以下のカテゴリを使用：
+
+- **Added**: 新機能
+- **Changed**: 既存機能の変更
+- **Deprecated**: 将来削除される機能
+- **Removed**: 削除された機能
+- **Fixed**: バグ修正
+- **Security**: セキュリティ関連の修正
+
+### 良い変更記述の例
+
+```markdown
+### Added
+- CSV input format support with automatic header detection
+- Raw string output option (-r/--raw-string) for unquoted string results
+
+### Fixed
+- Enhanced compact JSON colorization to handle escaped strings correctly
+```
+
+### リリースノートに含めるべき情報
+
+- 新機能（使用例を含む）
+- バグ修正（影響範囲を明記）
+- 破壊的変更（移行ガイド必須）
+- パフォーマンス改善
 - 既知の問題
 - 貢献者への謝辞
+
+### コミットメッセージからの自動生成
+
+```bash
+# feat: で始まるコミットを抽出（新機能）
+git log v1.1.0..HEAD --oneline | grep -E "^[a-f0-9]+ feat"
+
+# fix: で始まるコミットを抽出（バグ修正）
+git log v1.1.0..HEAD --oneline | grep -E "^[a-f0-9]+ fix"
+```

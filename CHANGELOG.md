@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-01-11
+
+### Added
+- CSV input format support with automatic header detection
+- Raw string output option (-r/--raw-string) for unquoted string results
+- --no-header option for parsing headerless CSV files  
+- Syntax highlighting for JSON, YAML, CSV, and JSONL output formats
+- Optional JSONata query expression - enables format conversion without transformation
+
+### Changed
+- Replaced format-based JSON output options with simpler --compact flag
+- Improved CSV colorization from value-based to column-based approach
+
+### Fixed
+- Enhanced compact JSON colorization to handle escaped strings correctly
+
 ## [1.1.0] - 2025-01-10
 
 ### Added
@@ -38,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All dependencies are up to date
 - No known vulnerabilities
 
-[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/TAKEDA-Takashi/jt-cli/releases/tag/v1.0.0
