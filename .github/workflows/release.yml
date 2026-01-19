@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # GitHub Release作成に必要
-      id-token: write # npm provenance に必要
+      id-token: write  # npm OIDC (Trusted Publishing) に必要
     steps:
       - uses: actions/checkout@v4
 
@@ -78,19 +78,13 @@ jobs:
             echo "SKIP_PUBLISH=false" >> $GITHUB_ENV
           fi
 
-      - name: Publish to npm
+      - name: Publish to npm (OIDC)
         if: env.SKIP_PUBLISH == 'false'
         run: pnpm publish --provenance --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
           body: |
             Changes in this Release
             - Check the [CHANGELOG](https://github.com/TAKEDA-Takashi/jt-cli/blob/main/CHANGELOG.md) for details
