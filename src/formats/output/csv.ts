@@ -79,7 +79,9 @@ function getAllKeys(data: unknown[]): string[] {
 
   for (const item of data) {
     if (item && typeof item === 'object' && !Array.isArray(item)) {
-      Object.keys(item).forEach((key) => keySet.add(key));
+      for (const key of Object.keys(item)) {
+        keySet.add(key);
+      }
     }
   }
 

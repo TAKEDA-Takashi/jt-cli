@@ -70,24 +70,24 @@ throw new JtError({
 #### Biome設定の遵守
 
 **コマンドの使い分け:**
-- `npm run format` - コードフォーマットのみ（インデント、改行など）
-- `npm run lint` - lintルールの自動修正（未使用変数の削除など）
-- `npm run check` - すべてのチェック（format + lint + import順序）修正なし
-- `npm run check:fix` - すべての自動修正を適用
-- `npm run typecheck` - TypeScriptの型チェック
+- `pnpm run format` - コードフォーマットのみ（インデント、改行など）
+- `pnpm run lint` - lintルールの自動修正（未使用変数の削除など）
+- `pnpm run check` - すべてのチェック（format + lint + import順序）修正なし
+- `pnpm run check:fix` - すべての自動修正を適用
+- `pnpm run typecheck` - TypeScriptの型チェック
 
 **コミット前の必須チェック:**
 ```bash
-npm run check      # すべてのBiomeルールをチェック（修正なし）
-npm run typecheck  # TypeScriptの型チェック
+pnpm run check      # すべてのBiomeルールをチェック（修正なし）
+pnpm run typecheck  # TypeScriptの型チェック
 ```
 
 **エラーが出た場合:**
 ```bash
-npm run check:fix  # すべての自動修正を一括適用
+pnpm run check:fix  # すべての自動修正を一括適用
 # または個別に:
-npm run format     # フォーマットのみ修正
-npm run lint       # lintルールのみ修正
+pnpm run format     # フォーマットのみ修正
+pnpm run lint       # lintルールのみ修正
 ```
 
 #### 型安全性
@@ -194,10 +194,10 @@ describe('CLI integration', () => {
 - `PATCH`: バグ修正
 
 #### リリース前チェックリスト
-- [ ] すべてのテストがパス（`npm test`）
+- [ ] すべてのテストがパス（`pnpm test`）
 - [ ] カバレッジ90%以上
-- [ ] Biomeチェックエラーなし（`npm run check`）※format, lint, organizeImports含む
-- [ ] TypeScriptエラーなし（`npm run typecheck`）
+- [ ] Biomeチェックエラーなし（`pnpm run check`）※format, lint, organizeImports含む
+- [ ] TypeScriptエラーなし（`pnpm run typecheck`）
 - [ ] CHANGELOG.md更新
 - [ ] package.jsonのバージョン更新
 
@@ -206,8 +206,8 @@ describe('CLI integration', () => {
 #### PR要件
 1. テストを含む（TDD実践の証跡）
 2. 既存テストがすべてパス
-3. Biomeチェックをパス（`npm run check`でエラーなし）
-4. TypeScriptチェックをパス（`npm run typecheck`でエラーなし）
+3. Biomeチェックをパス（`pnpm run check`でエラーなし）
+4. TypeScriptチェックをパス（`pnpm run typecheck`でエラーなし）
 5. 適切なコミットメッセージ
 
 #### コミットメッセージ形式
@@ -264,9 +264,9 @@ GitHub Actionsによる自動NPM公開が設定されています：
 - [ ] `NPM_TOKEN` がGitHub Secretsに設定済み
 - [ ] package.json のバージョンとタグが一致
 - [ ] CHANGELOG.md が更新済み
-- [ ] すべてのテストがパス（`npm test`）
-- [ ] Biomeチェックがパス（`npm run check`）
-- [ ] TypeScriptチェックがパス（`npm run typecheck`）
+- [ ] すべてのテストがパス（`pnpm test`）
+- [ ] Biomeチェックがパス（`pnpm run check`）
+- [ ] TypeScriptチェックがパス（`pnpm run typecheck`）
 
 ## 継続的改善
 

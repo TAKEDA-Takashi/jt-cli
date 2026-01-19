@@ -41,8 +41,8 @@
     "lint": "biome lint --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "prebuild": "npm run clean",
-    "prepublishOnly": "NODE_ENV=production npm run build",
+    "prebuild": "pnpm run clean",
+    "prepublishOnly": "NODE_ENV=production pnpm run build",
     "start": "node dist/jt.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -50,27 +50,32 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
-    "commander": "^14.0.0",
-    "csv-parse": "^6.0.0",
-    "csv-stringify": "^6.5.1",
-    "js-yaml": "^4.1.0",
-    "jsonata": "^2.0.5"
+    "chalk": "^5.6.2",
+    "commander": "^14.0.2",
+    "csv-parse": "^6.1.0",
+    "csv-stringify": "^6.6.0",
+    "js-yaml": "^4.1.1",
+    "jsonata": "^2.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.3.11",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^20.19.6",
-    "@vitest/coverage-v8": "^4.0.10",
-    "esbuild": "^0.25.6",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2",
-    "vitest": "^3.2.4"
+    "@types/node": "^20.19.30",
+    "@vitest/coverage-v8": "^4.0.17",
+    "esbuild": "^0.25.12",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

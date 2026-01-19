@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
@@ -48,8 +48,16 @@
     }
   },
   "files": {
-    "includes": ["src/**/*.ts", "tests/**/*.ts", "*.json", "*.mjs", "*.md"],
-    "experimentalScannerIgnores": ["dist/**", "coverage/**", "node_modules/**"]
+    "includes": [
+      "src/**/*.ts",
+      "tests/**/*.ts",
+      "*.json",
+      "*.mjs",
+      "*.md",
+      "!!**/dist",
+      "!!**/coverage",
+      "!!**/node_modules"
+    ]
   },
   "overrides": [
     {
