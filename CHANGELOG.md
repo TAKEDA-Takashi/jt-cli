@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-01-19
+
+### Changed
+- Migrated package manager from npm to pnpm
+- Added minimum-release-age setting (3 days) for dependency security
+- Updated GitHub Actions workflows for pnpm support
+- Migrated Biome configuration to v2.3.11 schema
+
+### Updated
+- chalk: 5.4.1 → 5.6.2
+- commander: 14.0.0 → 14.0.2
+- csv-parse: 6.0.0 → 6.1.0
+- csv-stringify: 6.5.2 → 6.6.0
+- jsonata: 2.0.6 → 2.1.0
+- @biomejs/biome: 2.1.1 → 2.3.11
+- @types/node: 20.19.6 → 20.19.30
+- @vitest/coverage-v8: 4.0.10 → 4.0.17
+- vitest: 3.2.4 → 4.0.17
+- tsx: 4.20.3 → 4.21.0
+- typescript: 5.8.3 → 5.9.3
+- esbuild: 0.25.6 → 0.25.12
+
 ## [1.2.3] - 2025-01-11
 
 ### Added
@@ -82,7 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All dependencies are up to date
 - No known vulnerabilities
 
-[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.0...v1.2.3
 [1.2.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.0.0...v1.1.0
