@@ -13,18 +13,23 @@ jobs:
         node-version: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: npm ci
-      
+        run: pnpm install --frozen-lockfile
+
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   publish:
     needs: test
@@ -34,20 +39,25 @@ jobs:
       id-token: write # npm provenance に必要
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
-      
+
       - name: Install dependencies
-        run: npm ci
-      
+        run: pnpm install --frozen-lockfile
+
       - name: Build
-        run: npm run build
-      
+        run: pnpm run build
+
       - name: Verify package version matches tag
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/v}
@@ -56,7 +66,7 @@ jobs:
             echo "Error: Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)"
             exit 1
           fi
-      
+
       - name: Check if version exists on npm
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
@@ -67,13 +77,13 @@ jobs:
             echo "Version $PACKAGE_VERSION does not exist. Proceeding with publish."
             echo "SKIP_PUBLISH=false" >> $GITHUB_ENV
           fi
-      
+
       - name: Publish to npm
         if: env.SKIP_PUBLISH == 'false'
-        run: npm publish --provenance --access public
+        run: pnpm publish --provenance --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
