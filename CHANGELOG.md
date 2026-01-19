@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added minimum-release-age setting (3 days) for dependency security
 - Updated GitHub Actions workflows for pnpm support
 - Migrated Biome configuration to v2.3.11 schema
+- Migrated npm publish to OIDC (Trusted Publishing) authentication
+- Replaced deprecated actions/create-release@v1 with softprops/action-gh-release@v2
 
 ### Updated
 - chalk: 5.4.1 → 5.6.2
