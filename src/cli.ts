@@ -3,6 +3,7 @@ import { createProductionContext } from './adapters';
 import { parseCliArgs, validateCliOptions } from './cli/core';
 import { getToolDescription } from './cli/describe';
 import { executeCliCommand, handleError } from './cli/executeCommand';
+import type { ErrorFormat } from './types';
 
 /**
  * CLIメイン関数（依存性注入版）
@@ -21,9 +22,9 @@ export async function main(argv: string[] = process.argv, context?: CliContext):
   // --error-format を早期に抽出（パース失敗時にもJSON出力できるように）
   const errorFormatIdx = argv.indexOf('--error-format');
   const rawErrorFormat = errorFormatIdx !== -1 ? argv[errorFormatIdx + 1] : undefined;
-  let errorFormat: string | undefined;
+  let errorFormat: ErrorFormat | undefined;
   if (rawErrorFormat === 'json' || rawErrorFormat === 'text') {
-    errorFormat = rawErrorFormat;
+    errorFormat = rawErrorFormat as ErrorFormat;
   } else if (rawErrorFormat !== undefined && !rawErrorFormat.startsWith('-')) {
     // 無効な値が指定された場合（他のオプションフラグでない場合のみ警告）
     ctx.output.error(

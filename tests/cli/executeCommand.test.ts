@@ -166,7 +166,9 @@ describe('handleError', () => {
   it('should handle unknown errors', () => {
     handleError('string error', mockContext);
 
-    expect((mockContext.output as MockOutputAdapter).errors[0]).toBe('An unknown error occurred');
+    expect((mockContext.output as MockOutputAdapter).errors[0]).toBe(
+      'Error: An unknown error occurred',
+    );
     expect((mockContext.output as MockOutputAdapter).exitCode).toBe(1);
   });
 
