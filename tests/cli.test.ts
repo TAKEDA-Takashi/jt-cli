@@ -175,4 +175,25 @@ describe('main function', () => {
     expect(errors[0]).toContain('Invalid output format: invalid');
     expect((mockContext.output as MockOutputAdapter).exitCode).toBe(1);
   });
+
+  it('should output tool description as JSON with --describe', async () => {
+    await main(['node', 'jt', '--describe'], mockContext);
+
+    const output = (mockContext.output as MockOutputAdapter).logs;
+    const parsed = JSON.parse(output[0]!);
+
+    expect(parsed.name).toBe('jt');
+    expect(parsed.version).toBeDefined();
+    expect(parsed.description).toBeDefined();
+    expect(parsed.inputFormats).toEqual(['json', 'yaml', 'jsonl', 'csv']);
+    expect(parsed.outputFormats).toEqual(['json', 'jsonl', 'yaml', 'csv']);
+    expect(parsed.options).toBeDefined();
+    expect(Array.isArray(parsed.options)).toBe(true);
+  });
+
+  it('should exit with 0 after --describe', async () => {
+    await main(['node', 'jt', '--describe'], mockContext);
+
+    expect((mockContext.output as MockOutputAdapter).exitCode).toBe(0);
+  });
 });
