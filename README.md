@@ -210,6 +210,25 @@ echo '{}' | jt '$undefined('
 # Error: Invalid JSONata expression: Unexpected token '(' at position 11
 ```
 
+### Machine-Readable Errors
+
+Use `--error-format json` to get structured error output, useful for AI agents and automation:
+
+```bash
+echo 'invalid' | jt --error-format json '$'
+# {"error":{"code":"INVALID_INPUT","message":"Invalid JSON input","detail":"...","suggestion":"..."}}
+```
+
+## AI Agent Integration
+
+`jt` supports AI agent tool discovery via the `--describe` option:
+
+```bash
+jt --describe
+```
+
+This outputs a JSON description of the tool's capabilities, options, and usage examples, enabling AI agents to automatically discover and use `jt` without manual documentation.
+
 ## Development
 
 ### Prerequisites
