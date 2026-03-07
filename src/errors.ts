@@ -45,6 +45,20 @@ export class JtError extends Error {
     Object.setPrototypeOf(this, JtError.prototype);
   }
 
+  toJSON(): { error: { code: string; message: string; detail?: string; suggestion?: string } } {
+    const result: { code: string; message: string; detail?: string; suggestion?: string } = {
+      code: this.code,
+      message: this.message,
+    };
+    if (this.detail !== undefined) {
+      result.detail = this.detail;
+    }
+    if (this.suggestion !== undefined) {
+      result.suggestion = this.suggestion;
+    }
+    return { error: result };
+  }
+
   format(): string {
     const useColor = isErrorColorEnabled();
 

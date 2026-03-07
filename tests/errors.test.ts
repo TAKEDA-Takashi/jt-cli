@@ -56,6 +56,48 @@ describe('JtError', () => {
   });
 });
 
+describe('JtError.toJSON', () => {
+  it('should serialize to structured JSON with all fields', () => {
+    const error = new JtError(
+      ErrorCode.INVALID_INPUT,
+      'Invalid JSON input',
+      'Unexpected token at position 5',
+      'Check for missing commas',
+    );
+
+    expect(error.toJSON()).toEqual({
+      error: {
+        code: 'INVALID_INPUT',
+        message: 'Invalid JSON input',
+        detail: 'Unexpected token at position 5',
+        suggestion: 'Check for missing commas',
+      },
+    });
+  });
+
+  it('should omit undefined optional fields', () => {
+    const error = new JtError(ErrorCode.EXECUTION_ERROR, 'Query failed');
+
+    const json = error.toJSON();
+    expect(json).toEqual({
+      error: {
+        code: 'EXECUTION_ERROR',
+        message: 'Query failed',
+      },
+    });
+    expect('detail' in json.error).toBe(false);
+    expect('suggestion' in json.error).toBe(false);
+  });
+
+  it('should produce valid JSON string via JSON.stringify', () => {
+    const error = new JtError(ErrorCode.INVALID_QUERY, 'Bad query', 'detail');
+
+    const str = JSON.stringify(error.toJSON());
+    const parsed = JSON.parse(str);
+    expect(parsed.error.code).toBe('INVALID_QUERY');
+  });
+});
+
 describe('ErrorCode', () => {
   it('should have all required error codes', () => {
     expect(ErrorCode.INVALID_INPUT).toBeDefined();
