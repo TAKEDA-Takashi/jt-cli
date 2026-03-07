@@ -214,8 +214,8 @@ echo '{}' | jt '$undefined('
 
 ### Prerequisites
 
-- Node.js 20 or higher (Node.js 24 recommended)
-- npm or yarn
+- Node.js 22 or higher (Node.js 24 recommended)
+- pnpm
 - nvm (recommended for managing Node.js versions)
 
 ### Setup
@@ -229,13 +229,13 @@ cd jt-cli
 nvm use  # This will use the version specified in .nvmrc (Node.js 24)
 
 # Install dependencies
-npm install
+pnpm install
 
 # Run tests
-npm test
+pnpm test
 
 # Build
-npm run build
+pnpm run build
 ```
 
 ### Testing
@@ -244,13 +244,13 @@ This project follows Test-Driven Development (TDD) practices:
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run tests in watch mode
-npm run test:watch
+pnpm run test:watch
 
 # Run with coverage
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 ## Contributing

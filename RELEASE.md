@@ -4,136 +4,68 @@
 
 ## 前提条件
 
-1. NPMアカウントを持っていること
-2. GitHub Secretsに `NPM_TOKEN` が設定されていること
+1. NPMアカウントを持っていること（OIDC Trusted Publishing設定済み）
+2. GitHub CLIがインストール・認証済みであること（`gh auth status`）
 3. mainブランチが最新の状態であること
-
-## リリース前チェックリスト
-
-リリース前に以下の項目を必ず確認してください：
-
-- [ ] すべてのテストがパス（`npm test`）
-- [ ] Biomeリントチェックがパス（`npm run lint:check`）  
-- [ ] TypeScriptチェックがパス（`npm run typecheck`）
-- [ ] ビルドが成功（`npm run build`）
-- [ ] CHANGELOG.mdのUnreleasedセクションが更新済み
-- [ ] 新機能のドキュメント（README.md）が更新済み
-- [ ] 破壊的変更がある場合、移行ガイドを記載
 
 ## リリース手順
 
-### 1. 変更内容の確認
+### 1. リリーススクリプトの実行
+
+mainブランチから以下を実行します:
 
 ```bash
-# mainブランチを最新に
-git checkout main
-git pull origin main
-
-# テストがすべてパスすることを確認
-npm test
-npm run lint:check
-npm run typecheck
+pnpm run release <patch|minor|major>
 ```
 
-### 2. CHANGELOG.mdの更新
+スクリプトが自動的に以下を行います:
+1. 前提条件チェック（mainブランチ、クリーンな状態、リモートと同期）
+2. リリース前チェック（test, check, typecheck, build）
+3. バージョン更新（package.json, pnpm-lock.yaml）
+4. CHANGELOG.mdの`[Unreleased]`セクションにバージョンと日付を設定
+5. リリースブランチ作成（`release/vX.Y.Z`）+ コミット + プッシュ
+6. GitHub PR作成
 
-リリース前に必ずCHANGELOG.mdを更新します：
+### 2. リリースPRの編集
+
+PRが作成されたら、以下を行います:
+
+- **CHANGELOG.md**: `[Unreleased]`セクションにリリースノートを記載
+  - Added / Changed / Fixed / Removed / Security などのカテゴリを使用
+- **README.md**: 新機能のドキュメントを追加（必要に応じて）
+- **破壊的変更がある場合**: 移行ガイドを記載
+
+### 3. PRのレビューとマージ
+
+PRをレビューし、mainにマージします。
+
+### 4. タグの作成とプッシュ
+
+マージ後、以下を実行してリリースをトリガーします:
 
 ```bash
-# 最後のリリース以降のコミットを確認
-git log v$(node -p "require('./package.json').version")..HEAD --oneline
-
-# CHANGELOG.mdのUnreleasedセクションに変更内容を記載
-# 形式: Added/Changed/Fixed/Removed/Security
+git switch main && git pull
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
-### 3. バージョンの更新
-
-```bash
-# パッチリリース (0.1.0 → 0.1.1)
-npm version patch
-
-# マイナーリリース (0.1.0 → 0.2.0)
-npm version minor
-
-# メジャーリリース (0.1.0 → 1.0.0)
-npm version major
-```
-
-このコマンドは以下を自動的に行います：
-- package.json のバージョンを更新
-- Git コミットを作成
-- バージョンタグを作成（例: v0.1.1）
-
-### 4. 変更をプッシュ
-
-```bash
-# コミットとタグをプッシュ
-git push origin main
-git push origin --tags
-```
-
-### 5. 自動リリースの確認
-
-タグのプッシュにより、GitHub Actionsが自動的に：
+タグのプッシュにより、GitHub Actionsが自動的に:
 1. すべてのテストを実行
 2. ビルドを実行
-3. NPMにパッケージを公開
+3. NPMにパッケージを公開（OIDC認証）
 4. GitHub Releaseを作成
 
 進行状況は [Actions タブ](https://github.com/TAKEDA-Takashi/jt-cli/actions) で確認できます。
 
-## トラブルシューティング
-
-### NPM_TOKEN エラー
-
-エラー: `npm ERR! code E401`
-
-解決方法：
-1. NPMトークンが有効であることを確認
-2. GitHub Secrets の `NPM_TOKEN` を更新
-
-### バージョン不一致エラー
-
-エラー: `Tag version does not match package.json version`
-
-解決方法：
-1. package.json のバージョンを手動で修正
-2. `git add package.json && git commit -m "fix: version"`
-3. 正しいバージョンでタグを作り直す
-
-## 初回公開時の注意
-
-初回公開前に以下を確認：
-
-1. パッケージ名が利用可能か確認
-   ```bash
-   npm view @2017takeda/jt-cli
-   ```
-
-2. ローカルでの公開テスト（dry-run）
-   ```bash
-   npm publish --dry-run
-   ```
-
-3. package.json の設定確認
-   - `name`: @2017takeda/jt-cli
-   - `publishConfig.access`: "public"
-   - `files`: 公開するファイルが正しく指定されているか
-
 ## セマンティックバージョニング
-
-バージョン番号の付け方：
 
 - **PATCH (x.x.1)**: バグ修正、後方互換性のある修正
 - **MINOR (x.1.0)**: 新機能追加、後方互換性あり
 - **MAJOR (1.0.0)**: 破壊的変更、後方互換性なし
 
-## リリースノート作成ガイドライン
+## CHANGELOGのカテゴリ
 
-### CHANGELOGのカテゴリ
-
-Keep a Changelogの形式に従い、以下のカテゴリを使用：
+[Keep a Changelog](https://keepachangelog.com/) の形式に従います:
 
 - **Added**: 新機能
 - **Changed**: 既存機能の変更
@@ -141,33 +73,28 @@ Keep a Changelogの形式に従い、以下のカテゴリを使用：
 - **Removed**: 削除された機能
 - **Fixed**: バグ修正
 - **Security**: セキュリティ関連の修正
+- **Updated**: 依存関係の更新
 
-### 良い変更記述の例
+## トラブルシューティング
 
-```markdown
-### Added
-- CSV input format support with automatic header detection
-- Raw string output option (-r/--raw-string) for unquoted string results
+### NPM公開エラー
 
-### Fixed
-- Enhanced compact JSON colorization to handle escaped strings correctly
-```
+エラー: `npm ERR! code E401`
 
-### リリースノートに含めるべき情報
+解決方法:
+1. npm OIDC (Trusted Publishing) の設定を確認
+2. GitHub Actionsの`id-token: write`パーミッションを確認
 
-- 新機能（使用例を含む）
-- バグ修正（影響範囲を明記）
-- 破壊的変更（移行ガイド必須）
-- パフォーマンス改善
-- 既知の問題
-- 貢献者への謝辞
+### バージョン不一致エラー
 
-### コミットメッセージからの自動生成
+エラー: `Tag version does not match package.json version`
+
+解決方法:
+1. package.jsonのバージョンとタグが一致していることを確認
+2. 不一致の場合、タグを削除して正しいバージョンで再作成
+
+### ローカルでの公開テスト（dry-run）
 
 ```bash
-# feat: で始まるコミットを抽出（新機能）
-git log v1.1.0..HEAD --oneline | grep -E "^[a-f0-9]+ feat"
-
-# fix: で始まるコミットを抽出（バグ修正）
-git log v1.1.0..HEAD --oneline | grep -E "^[a-f0-9]+ fix"
+pnpm publish --dry-run
 ```
