@@ -13,14 +13,25 @@ export function getToolDescription(): string {
       usage: 'jt [options] [query] [file]',
       inputFormats: ['json', 'yaml', 'jsonl', 'csv'],
       outputFormats: ['json', 'jsonl', 'yaml', 'csv'],
-      options: CLI_OPTIONS.filter((o) => !o.hidden).map((o) => ({
-        flag: o.flag,
-        description: o.description,
-      })),
+      options: CLI_OPTIONS.filter((o) => !o.hidden).map((o) => {
+        const opt: { flag: string; description: string; defaultValue?: string } = {
+          flag: o.flag,
+          description: o.description,
+        };
+        if (o.defaultValue !== undefined) {
+          opt.defaultValue = o.defaultValue;
+        }
+        return opt;
+      }),
+      notes: [
+        'The query argument is optional. When omitted, jt acts as a format converter (e.g., jt data.json -o yaml).',
+        'Input format is auto-detected from file extension or content when not specified with -i.',
+        'Pipe input via stdin or provide a file path as the last argument.',
+      ],
       examples: [
         { command: "jt '$.name' data.json", description: 'Extract a field from JSON file' },
         { command: "cat data.json | jt '$.users[age > 20]'", description: 'Filter from stdin' },
-        { command: 'jt data.json -o yaml', description: 'Convert JSON to YAML' },
+        { command: 'jt data.json -o yaml', description: 'Convert JSON to YAML (no query)' },
         { command: "jt -i csv '$.name' users.csv", description: 'Query CSV data' },
       ],
       queryLanguage: {

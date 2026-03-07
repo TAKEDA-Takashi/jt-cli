@@ -52,6 +52,31 @@ describe('getToolDescription', () => {
     expect(parsed.queryLanguage.features.length).toBeGreaterThan(0);
   });
 
+  it('should include defaultValue for options that have one', () => {
+    const parsed = JSON.parse(getToolDescription());
+    const outputFormatOpt = parsed.options.find(
+      (o: { flag: string }) => o.flag === '-o, --output-format <format>',
+    );
+    expect(outputFormatOpt).toBeDefined();
+    expect(outputFormatOpt.defaultValue).toBe('json');
+  });
+
+  it('should not include defaultValue key when option has no default', () => {
+    const parsed = JSON.parse(getToolDescription());
+    const compactOpt = parsed.options.find((o: { flag: string }) => o.flag === '-c, --compact');
+    expect(compactOpt).toBeDefined();
+    expect('defaultValue' in compactOpt).toBe(false);
+  });
+
+  it('should include notes about query-optional behavior', () => {
+    const parsed = JSON.parse(getToolDescription());
+    expect(parsed.notes).toBeDefined();
+    expect(parsed.notes.length).toBeGreaterThan(0);
+    // クエリ省略時の挙動が記載されていること
+    const queryNote = parsed.notes.find((n: string) => n.toLowerCase().includes('query'));
+    expect(queryNote).toBeDefined();
+  });
+
   it('should have version matching package.json', () => {
     const parsed = JSON.parse(getToolDescription());
     const pkg = JSON.parse(
