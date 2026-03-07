@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2026-03-07
 
+### Added
+- `--error-format json` option for machine-readable structured error output (code, message, detail, suggestion)
+- `--describe` option for AI agent tool discovery (outputs tool capabilities as JSON)
+- `JtError.toJSON()` method for structured error serialization
+- `UNKNOWN_ERROR` to ErrorCode enum for consistent error classification
+- Release preparation script (`scripts/release.sh`) for PR-based release workflow
+
+### Changed
+- Dropped Node.js 20 support (minimum version is now 22.0.0)
+- Extracted shared CLI option definitions to `src/cli/options.ts` (DRY improvement)
+- Improved `handleError` type safety with `ErrorFormat` type
+- Invalid `--error-format` values now show a warning instead of silently falling back
+- Updated RELEASE.md with new PR-based release flow
+- Updated README.md development section (Node.js 22+, pnpm)
+
+### Updated
+- @biomejs/biome: 2.3.11 → 2.4.5
+- @vitest/coverage-v8: 4.0.17 → 4.0.18
+- vitest: 4.0.17 → 4.0.18
+- commander: 14.0.2 → 14.0.3
+- @types/node: 20.19.30 → 22.19.13
+
 ## [1.2.4] - 2026-01-19
 
 ### Changed
