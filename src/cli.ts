@@ -21,8 +21,15 @@ export async function main(argv: string[] = process.argv, context?: CliContext):
   // --error-format を早期に抽出（パース失敗時にもJSON出力できるように）
   const errorFormatIdx = argv.indexOf('--error-format');
   const rawErrorFormat = errorFormatIdx !== -1 ? argv[errorFormatIdx + 1] : undefined;
-  const errorFormat =
-    rawErrorFormat === 'json' || rawErrorFormat === 'text' ? rawErrorFormat : undefined;
+  let errorFormat: string | undefined;
+  if (rawErrorFormat === 'json' || rawErrorFormat === 'text') {
+    errorFormat = rawErrorFormat;
+  } else if (rawErrorFormat !== undefined && !rawErrorFormat.startsWith('-')) {
+    // 無効な値が指定された場合（他のオプションフラグでない場合のみ警告）
+    ctx.output.error(
+      `Warning: Invalid --error-format value '${rawErrorFormat}'. Valid values are: json, text. Using default (text).`,
+    );
+  }
 
   try {
     // コマンドライン引数をパース

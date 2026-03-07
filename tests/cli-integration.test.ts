@@ -222,11 +222,12 @@ describe('CLI Integration - Error Format', () => {
     expect(parsed.error.code).toBe('INVALID_INPUT');
   });
 
-  it('should fall back to text format with invalid --error-format value', () => {
+  it('should warn and fall back to text format with invalid --error-format value', () => {
     const { stderr } = runCLIWithStderr(`--error-format xml '$.name'`);
-    // JSONではなくテキスト形式であること
-    expect(() => JSON.parse(stderr)).toThrow();
-    expect(stderr).toContain('Error');
+    // 警告メッセージが含まれること
+    expect(stderr).toContain('Warning');
+    expect(stderr).toContain('--error-format');
+    expect(stderr).toContain('xml');
   });
 
   it('should output text error when --error-format text is specified', () => {

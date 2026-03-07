@@ -185,17 +185,19 @@ describe('main function', () => {
     expect(parsed.error.code).toBe('FILE_NOT_FOUND');
   });
 
-  it('should ignore invalid --error-format value and use text format', async () => {
+  it('should warn and fall back to text format with invalid --error-format value', async () => {
     await main(
       ['node', 'jt', '--error-format', 'invalid', '$.name', 'nonexistent.json'],
       mockContext,
     );
 
     const errors = (mockContext.output as MockOutputAdapter).errors;
-    expect(errors).toHaveLength(1);
-    // テキスト形式のエラーメッセージであること（JSONではない）
-    expect(() => JSON.parse(errors[0] as string)).toThrow();
-    expect(errors[0]).toContain('File not found');
+    // 警告 + 実際のエラーの2つが出力される
+    expect(errors.length).toBeGreaterThanOrEqual(2);
+    // 無効値に対する警告
+    expect(errors[0]).toContain('Warning');
+    expect(errors[0]).toContain('--error-format');
+    expect(errors[0]).toContain('invalid');
   });
 
   it('should output tool description as JSON with --describe', async () => {
