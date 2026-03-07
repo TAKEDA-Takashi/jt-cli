@@ -112,11 +112,24 @@ fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
 
 # --- CHANGELOG.md の更新 ---
 echo "Updating CHANGELOG.md"
-# [Unreleased] を [NEW_VERSION] - DATE に変更し、新しい [Unreleased] セクションを追加
-sed -i '' "s/## \[Unreleased\]/## [Unreleased]\n\n## [${NEW_VERSION}] - ${RELEASE_DATE}/" CHANGELOG.md
+node -e "
+const fs = require('fs');
+let changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
 
-# フッターのリンクを更新
-sed -i '' "s|\[Unreleased\]: \(.*\)/compare/v${CURRENT_VERSION}\.\.\.HEAD|[Unreleased]: \1/compare/v${NEW_VERSION}...HEAD\n[${NEW_VERSION}]: \1/compare/v${CURRENT_VERSION}...v${NEW_VERSION}|" CHANGELOG.md
+// [Unreleased] の下に新バージョンセクションを追加
+changelog = changelog.replace(
+  '## [Unreleased]',
+  '## [Unreleased]\n\n## [${NEW_VERSION}] - ${RELEASE_DATE}'
+);
+
+// フッターのリンクを更新
+changelog = changelog.replace(
+  '[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v${CURRENT_VERSION}...HEAD',
+  '[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v${NEW_VERSION}...HEAD\n[${NEW_VERSION}]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v${CURRENT_VERSION}...v${NEW_VERSION}'
+);
+
+fs.writeFileSync('CHANGELOG.md', changelog);
+"
 
 # --- pnpm-lock.yaml の更新 ---
 echo "Updating pnpm-lock.yaml"
