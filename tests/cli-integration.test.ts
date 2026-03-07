@@ -221,4 +221,33 @@ describe('CLI Integration - Error Format', () => {
     const parsed = JSON.parse(result);
     expect(parsed.error.code).toBe('INVALID_INPUT');
   });
+
+  it('should fall back to text format with invalid --error-format value', () => {
+    const { stderr } = runCLIWithStderr(`--error-format xml '$.name'`);
+    // JSONではなくテキスト形式であること
+    expect(() => JSON.parse(stderr)).toThrow();
+    expect(stderr).toContain('Error');
+  });
+
+  it('should output text error when --error-format text is specified', () => {
+    const { stderr } = runCLIWithStderr(`--error-format text '$.name'`);
+    expect(() => JSON.parse(stderr)).toThrow();
+    expect(stderr).toContain('Error');
+  });
+});
+
+describe('CLI Integration - Describe', () => {
+  it('should output valid JSON with --describe', () => {
+    const output = runCLI('--describe');
+    const parsed = JSON.parse(output);
+    expect(parsed.name).toBe('jt');
+    expect(parsed.inputFormats).toEqual(['json', 'yaml', 'jsonl', 'csv']);
+    expect(parsed.outputFormats).toEqual(['json', 'jsonl', 'yaml', 'csv']);
+  });
+
+  it('should work without any other arguments', () => {
+    // --describe は入力不要
+    const output = runCLI('--describe');
+    expect(() => JSON.parse(output)).not.toThrow();
+  });
 });

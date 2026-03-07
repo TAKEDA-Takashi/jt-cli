@@ -29,4 +29,38 @@ describe('getToolDescription', () => {
       expect(descriptionFlags).not.toContain(opt.flag);
     }
   });
+
+  it('should include examples with command and description', () => {
+    const parsed = JSON.parse(getToolDescription());
+
+    expect(parsed.examples).toBeDefined();
+    expect(parsed.examples.length).toBeGreaterThan(0);
+    for (const example of parsed.examples) {
+      expect(example).toHaveProperty('command');
+      expect(example).toHaveProperty('description');
+      expect(typeof example.command).toBe('string');
+      expect(typeof example.description).toBe('string');
+    }
+  });
+
+  it('should include queryLanguage information', () => {
+    const parsed = JSON.parse(getToolDescription());
+
+    expect(parsed.queryLanguage.name).toBe('JSONata');
+    expect(parsed.queryLanguage.url).toBeDefined();
+    expect(parsed.queryLanguage.features).toBeDefined();
+    expect(parsed.queryLanguage.features.length).toBeGreaterThan(0);
+  });
+
+  it('should have version matching package.json', () => {
+    const parsed = JSON.parse(getToolDescription());
+    const pkg = JSON.parse(
+      require('node:fs').readFileSync(
+        require('node:path').resolve(__dirname, '../../package.json'),
+        'utf8',
+      ),
+    );
+
+    expect(parsed.version).toBe(pkg.version);
+  });
 });
