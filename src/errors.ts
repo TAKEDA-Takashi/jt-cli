@@ -8,6 +8,7 @@ export enum ErrorCode {
   FILE_NOT_FOUND = 'FILE_NOT_FOUND',
   INVALID_FORMAT = 'INVALID_FORMAT',
   INVALID_OUTPUT_FORMAT = 'INVALID_OUTPUT_FORMAT',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
 // エラー出力の色付けが有効かどうかを判定
@@ -43,6 +44,20 @@ export class JtError extends Error {
     super(message);
     this.name = 'JtError';
     Object.setPrototypeOf(this, JtError.prototype);
+  }
+
+  toJSON(): { error: { code: string; message: string; detail?: string; suggestion?: string } } {
+    const result: { code: string; message: string; detail?: string; suggestion?: string } = {
+      code: this.code,
+      message: this.message,
+    };
+    if (this.detail !== undefined) {
+      result.detail = this.detail;
+    }
+    if (this.suggestion !== undefined) {
+      result.suggestion = this.suggestion;
+    }
+    return { error: result };
   }
 
   format(): string {

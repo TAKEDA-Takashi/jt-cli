@@ -1,9 +1,9 @@
 import type { CliContext } from '../adapters';
-import { JtError } from '../errors';
+import { ErrorCode, JtError } from '../errors';
 import { parseInput } from '../formats/input';
 import { formatOutput } from '../formats/output/index';
 import { executeQuery } from '../query';
-import type { CliOptions } from '../types';
+import type { CliOptions, ErrorFormat } from '../types';
 
 /**
  * CLIコマンドを実行（依存性注入版）
@@ -30,17 +30,33 @@ export async function executeCliCommand(
 }
 
 /**
+ * エラーからメッセージを抽出
+ */
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'An unknown error occurred';
+}
+
+/**
  * エラーを処理して適切なメッセージを出力
  */
-export function handleError(error: unknown, context: CliContext): void {
+export function handleError(error: unknown, context: CliContext, errorFormat?: ErrorFormat): void {
+  if (errorFormat === 'json') {
+    const json =
+      error instanceof JtError
+        ? error.toJSON()
+        : { error: { code: ErrorCode.UNKNOWN_ERROR, message: extractErrorMessage(error) } };
+    context.output.error(JSON.stringify(json));
+    context.output.exit(1);
+    return;
+  }
+
   if (error instanceof JtError) {
     context.output.error(error.format());
-    context.output.exit(1);
-  } else if (error instanceof Error) {
-    context.output.error(`Error: ${error.message}`);
-    context.output.exit(1);
   } else {
-    context.output.error('An unknown error occurred');
-    context.output.exit(1);
+    context.output.error(`Error: ${extractErrorMessage(error)}`);
   }
+  context.output.exit(1);
 }

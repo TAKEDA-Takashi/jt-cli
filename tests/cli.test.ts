@@ -175,4 +175,49 @@ describe('main function', () => {
     expect(errors[0]).toContain('Invalid output format: invalid');
     expect((mockContext.output as MockOutputAdapter).exitCode).toBe(1);
   });
+
+  it('should output error as JSON with --error-format json', async () => {
+    await main(['node', 'jt', '--error-format', 'json', '$.name', 'nonexistent.json'], mockContext);
+
+    const errors = (mockContext.output as MockOutputAdapter).errors;
+    expect(errors).toHaveLength(1);
+    const parsed = JSON.parse(errors[0] as string);
+    expect(parsed.error.code).toBe('FILE_NOT_FOUND');
+  });
+
+  it('should warn and fall back to text format with invalid --error-format value', async () => {
+    await main(
+      ['node', 'jt', '--error-format', 'invalid', '$.name', 'nonexistent.json'],
+      mockContext,
+    );
+
+    const errors = (mockContext.output as MockOutputAdapter).errors;
+    // 警告 + 実際のエラーの2つが出力される
+    expect(errors.length).toBeGreaterThanOrEqual(2);
+    // 無効値に対する警告
+    expect(errors[0]).toContain('Warning');
+    expect(errors[0]).toContain('--error-format');
+    expect(errors[0]).toContain('invalid');
+  });
+
+  it('should output tool description as JSON with --describe', async () => {
+    await main(['node', 'jt', '--describe'], mockContext);
+
+    const output = (mockContext.output as MockOutputAdapter).logs;
+    const parsed = JSON.parse(output[0]!);
+
+    expect(parsed.name).toBe('jt');
+    expect(parsed.version).toBeDefined();
+    expect(parsed.description).toBeDefined();
+    expect(parsed.inputFormats).toEqual(['json', 'yaml', 'jsonl', 'csv']);
+    expect(parsed.outputFormats).toEqual(['json', 'jsonl', 'yaml', 'csv']);
+    expect(parsed.options).toBeDefined();
+    expect(Array.isArray(parsed.options)).toBe(true);
+  });
+
+  it('should exit with 0 after --describe', async () => {
+    await main(['node', 'jt', '--describe'], mockContext);
+
+    expect((mockContext.output as MockOutputAdapter).exitCode).toBe(0);
+  });
 });

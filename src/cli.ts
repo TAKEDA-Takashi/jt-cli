@@ -1,7 +1,9 @@
 import type { CliContext } from './adapters';
 import { createProductionContext } from './adapters';
 import { parseCliArgs, validateCliOptions } from './cli/core';
+import { getToolDescription } from './cli/describe';
 import { executeCliCommand, handleError } from './cli/executeCommand';
+import type { ErrorFormat } from './types';
 
 /**
  * CLIメイン関数（依存性注入版）
@@ -9,6 +11,26 @@ import { executeCliCommand, handleError } from './cli/executeCommand';
 export async function main(argv: string[] = process.argv, context?: CliContext): Promise<void> {
   // コンテキストが提供されていない場合は本番用コンテキストを使用
   const ctx = context || createProductionContext();
+
+  // --describe を早期に処理（入力不要）
+  if (argv.includes('--describe')) {
+    ctx.output.log(getToolDescription());
+    ctx.output.exit(0);
+    return;
+  }
+
+  // --error-format を早期に抽出（パース失敗時にもJSON出力できるように）
+  const errorFormatIdx = argv.indexOf('--error-format');
+  const rawErrorFormat = errorFormatIdx !== -1 ? argv[errorFormatIdx + 1] : undefined;
+  let errorFormat: ErrorFormat | undefined;
+  if (rawErrorFormat === 'json' || rawErrorFormat === 'text') {
+    errorFormat = rawErrorFormat as ErrorFormat;
+  } else if (rawErrorFormat !== undefined && !rawErrorFormat.startsWith('-')) {
+    // 無効な値が指定された場合（他のオプションフラグでない場合のみ警告）
+    ctx.output.error(
+      `Warning: Invalid --error-format value '${rawErrorFormat}'. Valid values are: json, text. Using default (text).`,
+    );
+  }
 
   try {
     // コマンドライン引数をパース
@@ -35,7 +57,7 @@ export async function main(argv: string[] = process.argv, context?: CliContext):
     ctx.output.log(result);
   } catch (error) {
     // エラーハンドリング
-    handleError(error, ctx);
+    handleError(error, ctx, errorFormat);
   }
 }
 
