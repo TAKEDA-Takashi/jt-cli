@@ -176,6 +176,28 @@ describe('main function', () => {
     expect((mockContext.output as MockOutputAdapter).exitCode).toBe(1);
   });
 
+  it('should output error as JSON with --error-format json', async () => {
+    await main(['node', 'jt', '--error-format', 'json', '$.name', 'nonexistent.json'], mockContext);
+
+    const errors = (mockContext.output as MockOutputAdapter).errors;
+    expect(errors).toHaveLength(1);
+    const parsed = JSON.parse(errors[0] as string);
+    expect(parsed.error.code).toBe('FILE_NOT_FOUND');
+  });
+
+  it('should ignore invalid --error-format value and use text format', async () => {
+    await main(
+      ['node', 'jt', '--error-format', 'invalid', '$.name', 'nonexistent.json'],
+      mockContext,
+    );
+
+    const errors = (mockContext.output as MockOutputAdapter).errors;
+    expect(errors).toHaveLength(1);
+    // テキスト形式のエラーメッセージであること（JSONではない）
+    expect(() => JSON.parse(errors[0] as string)).toThrow();
+    expect(errors[0]).toContain('File not found');
+  });
+
   it('should output tool description as JSON with --describe', async () => {
     await main(['node', 'jt', '--describe'], mockContext);
 

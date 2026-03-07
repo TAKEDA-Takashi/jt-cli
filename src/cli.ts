@@ -20,7 +20,9 @@ export async function main(argv: string[] = process.argv, context?: CliContext):
 
   // --error-format を早期に抽出（パース失敗時にもJSON出力できるように）
   const errorFormatIdx = argv.indexOf('--error-format');
-  const errorFormat = errorFormatIdx !== -1 ? argv[errorFormatIdx + 1] : undefined;
+  const rawErrorFormat = errorFormatIdx !== -1 ? argv[errorFormatIdx + 1] : undefined;
+  const errorFormat =
+    rawErrorFormat === 'json' || rawErrorFormat === 'text' ? rawErrorFormat : undefined;
 
   try {
     // コマンドライン引数をパース
