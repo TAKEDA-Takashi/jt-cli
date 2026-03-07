@@ -1,4 +1,5 @@
 import packageInfo from '../../package.json';
+import { CLI_OPTIONS } from './options';
 
 /**
  * jtの機能をJSON形式で出力（AIエージェント向け）
@@ -12,21 +13,10 @@ export function getToolDescription(): string {
       usage: 'jt [options] [query] [file]',
       inputFormats: ['json', 'yaml', 'jsonl', 'csv'],
       outputFormats: ['json', 'jsonl', 'yaml', 'csv'],
-      options: [
-        {
-          flag: '-i, --input-format <format>',
-          description: 'Input format (auto-detected if not specified)',
-        },
-        { flag: '-o, --output-format <format>', description: 'Output format (default: json)' },
-        { flag: '-c, --compact', description: 'Compact JSON output' },
-        { flag: '-r, --raw-string', description: 'Output raw strings without quotes' },
-        { flag: '--no-header', description: 'Treat CSV input as having no headers' },
-        {
-          flag: '--error-format <format>',
-          description: 'Error output format: text (default), json',
-        },
-        { flag: '--color / --no-color', description: 'Force or disable color output' },
-      ],
+      options: CLI_OPTIONS.filter((o) => !o.hidden).map((o) => ({
+        flag: o.flag,
+        description: o.description,
+      })),
       examples: [
         { command: "jt '$.name' data.json", description: 'Extract a field from JSON file' },
         { command: "cat data.json | jt '$.users[age > 20]'", description: 'Filter from stdin' },

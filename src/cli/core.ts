@@ -3,6 +3,7 @@ import packageInfo from '../../package.json';
 import type { CliContext } from '../adapters';
 import { ErrorCode, JtError } from '../errors';
 import type { CliOptions, ErrorFormat, InputFormat, OutputFormat } from '../types';
+import { CLI_OPTIONS } from './options';
 
 /**
  * ファイルまたは標準入力から入力を取得（依存性注入版）
@@ -182,24 +183,18 @@ export async function parseCliArgs(argv: string[], context: CliContext): Promise
     .description(packageInfo.description)
     .version(packageInfo.version)
     .argument('[query]', 'JSONata query expression (optional)')
-    .argument('[file]', 'Input file (JSON, YAML, or JSON Lines)')
-    .option(
-      '-i, --input-format <format>',
-      'Input format: json, yaml, jsonl, csv (auto-detected if not specified)',
-    )
-    .option('-o, --output-format <format>', 'Output format', 'json')
-    .option('-c, --compact', 'Compact JSON output (only works with -o json)')
-    .option('-r, --raw-string', 'Output raw strings without quotes (for JSON output)')
-    .option('--no-header', 'Treat CSV input as having no headers (only works with -i csv)')
-    .option('--error-format <format>', 'Error output format: text (default), json')
-    .option('--describe', 'Output tool description as JSON (for AI agent integration)')
-    .option('--color', 'Force color output even when piped')
-    .option('--no-color', 'Disable color output')
-    .action((queryArg?: string, fileArg?: string) => {
-      query = queryArg;
-      file = fileArg;
-      parsedOptions = program.opts();
-    });
+    .argument('[file]', 'Input file (JSON, YAML, or JSON Lines)');
+
+  // 共有定義からオプションを登録
+  for (const opt of CLI_OPTIONS) {
+    program.option(opt.flag, opt.description, opt.defaultValue);
+  }
+
+  program.action((queryArg?: string, fileArg?: string) => {
+    query = queryArg;
+    file = fileArg;
+    parsedOptions = program.opts();
+  });
 
   // パース実行
   try {
