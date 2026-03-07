@@ -21,6 +21,19 @@ function runCLI(args: string): string {
   }
 }
 
+function runCLIWithStderr(args: string): { stdout: string; stderr: string } {
+  try {
+    const stdout = execSync(`tsx ${CLI_PATH} ${args}`, { encoding: 'utf8' }).trim();
+    return { stdout, stderr: '' };
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'stdout' in error && 'stderr' in error) {
+      const e = error as { stdout: Buffer | string; stderr: Buffer | string };
+      return { stdout: e.stdout.toString().trim(), stderr: e.stderr.toString().trim() };
+    }
+    throw error;
+  }
+}
+
 describe('CLI Integration - No Query', () => {
   it('should format JSON file without query', () => {
     const output = runCLI(`${TEST_DATA_JSON}`);
@@ -188,5 +201,24 @@ describe('CLI Integration - CSV with --no-header', () => {
       encoding: 'utf8',
     });
     expect(output).toContain('Warning: --no-header option is only effective with CSV input format');
+  });
+});
+
+describe('CLI Integration - Error Format', () => {
+  it('should output structured JSON error with --error-format json', () => {
+    const { stderr } = runCLIWithStderr(`--error-format json '$.name'`);
+    const parsed = JSON.parse(stderr);
+    expect(parsed.error).toBeDefined();
+    expect(parsed.error.code).toBeDefined();
+    expect(parsed.error.message).toBeDefined();
+  });
+
+  it('should output invalid JSON error as structured JSON', () => {
+    const result = execSync(
+      `echo 'invalid json' | tsx ${CLI_PATH} --error-format json '$.name' 2>&1 || true`,
+      { encoding: 'utf8' },
+    ).trim();
+    const parsed = JSON.parse(result);
+    expect(parsed.error.code).toBe('INVALID_INPUT');
   });
 });

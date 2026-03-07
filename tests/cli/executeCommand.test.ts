@@ -169,4 +169,51 @@ describe('handleError', () => {
     expect((mockContext.output as MockOutputAdapter).errors[0]).toBe('An unknown error occurred');
     expect((mockContext.output as MockOutputAdapter).exitCode).toBe(1);
   });
+
+  describe('with errorFormat json', () => {
+    it('should output JtError as structured JSON', () => {
+      const error = new JtError(ErrorCode.INVALID_INPUT, 'Test error', 'Detail', 'Suggestion');
+
+      handleError(error, mockContext, 'json');
+
+      const errors = (mockContext.output as MockOutputAdapter).errors;
+      expect(errors).toHaveLength(1);
+      expect(JSON.parse(errors[0] as string)).toEqual({
+        error: {
+          code: 'INVALID_INPUT',
+          message: 'Test error',
+          detail: 'Detail',
+          suggestion: 'Suggestion',
+        },
+      });
+    });
+
+    it('should output regular Error as structured JSON', () => {
+      const error = new Error('Regular error');
+
+      handleError(error, mockContext, 'json');
+
+      const errors = (mockContext.output as MockOutputAdapter).errors;
+      expect(errors).toHaveLength(1);
+      expect(JSON.parse(errors[0] as string)).toEqual({
+        error: {
+          code: 'UNKNOWN_ERROR',
+          message: 'Regular error',
+        },
+      });
+    });
+
+    it('should output unknown errors as structured JSON', () => {
+      handleError('string error', mockContext, 'json');
+
+      const errors = (mockContext.output as MockOutputAdapter).errors;
+      expect(errors).toHaveLength(1);
+      expect(JSON.parse(errors[0] as string)).toEqual({
+        error: {
+          code: 'UNKNOWN_ERROR',
+          message: 'An unknown error occurred',
+        },
+      });
+    });
+  });
 });

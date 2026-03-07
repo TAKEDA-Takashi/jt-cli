@@ -32,7 +32,23 @@ export async function executeCliCommand(
 /**
  * エラーを処理して適切なメッセージを出力
  */
-export function handleError(error: unknown, context: CliContext): void {
+export function handleError(error: unknown, context: CliContext, errorFormat?: string): void {
+  if (errorFormat === 'json') {
+    if (error instanceof JtError) {
+      context.output.error(JSON.stringify(error.toJSON()));
+    } else if (error instanceof Error) {
+      context.output.error(
+        JSON.stringify({ error: { code: 'UNKNOWN_ERROR', message: error.message } }),
+      );
+    } else {
+      context.output.error(
+        JSON.stringify({ error: { code: 'UNKNOWN_ERROR', message: 'An unknown error occurred' } }),
+      );
+    }
+    context.output.exit(1);
+    return;
+  }
+
   if (error instanceof JtError) {
     context.output.error(error.format());
     context.output.exit(1);

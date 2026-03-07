@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import packageInfo from '../../package.json';
 import type { CliContext } from '../adapters';
 import { ErrorCode, JtError } from '../errors';
-import type { CliOptions, InputFormat, OutputFormat } from '../types';
+import type { CliOptions, ErrorFormat, InputFormat, OutputFormat } from '../types';
 
 /**
  * ファイルまたは標準入力から入力を取得（依存性注入版）
@@ -191,6 +191,8 @@ export async function parseCliArgs(argv: string[], context: CliContext): Promise
     .option('-c, --compact', 'Compact JSON output (only works with -o json)')
     .option('-r, --raw-string', 'Output raw strings without quotes (for JSON output)')
     .option('--no-header', 'Treat CSV input as having no headers (only works with -i csv)')
+    .option('--error-format <format>', 'Error output format: text (default), json')
+    .option('--describe', 'Output tool description as JSON (for AI agent integration)')
     .option('--color', 'Force color output even when piped')
     .option('--no-color', 'Disable color output')
     .action((queryArg?: string, fileArg?: string) => {
@@ -262,5 +264,6 @@ export async function parseCliArgs(argv: string[], context: CliContext): Promise
     compact: parsedOptions['compact'] as boolean | undefined,
     rawString: parsedOptions['rawString'] as boolean | undefined,
     noHeader,
+    errorFormat: (parsedOptions['errorFormat'] as ErrorFormat) || undefined,
   };
 }
