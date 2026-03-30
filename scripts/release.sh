@@ -81,17 +81,17 @@ fi
 echo ""
 echo "--- Running pre-release checks ---"
 
-echo "[1/4] pnpm run check..."
-pnpm run check
+echo "[1/4] npm run check..."
+npm run check
 
-echo "[2/4] pnpm run typecheck..."
-pnpm run typecheck
+echo "[2/4] npm run typecheck..."
+npm run typecheck
 
-echo "[3/4] pnpm test..."
-pnpm test -- --run
+echo "[3/4] npm test..."
+npm test -- --run
 
-echo "[4/4] pnpm run build..."
-pnpm run build
+echo "[4/4] npm run build..."
+npm run build
 
 echo "--- All checks passed ---"
 echo ""
@@ -131,13 +131,13 @@ changelog = changelog.replace(
 fs.writeFileSync('CHANGELOG.md', changelog);
 "
 
-# --- pnpm-lock.yaml の更新 ---
-echo "Updating pnpm-lock.yaml"
-pnpm install --lockfile-only
+# --- package-lock.json の更新 ---
+echo "Updating package-lock.json"
+npm install --package-lock-only
 
 # --- コミット ---
 echo "Creating release commit"
-git add package.json CHANGELOG.md pnpm-lock.yaml
+git add package.json CHANGELOG.md package-lock.json
 git commit -m "chore: release v${NEW_VERSION}"
 
 # --- プッシュ & PR作成 ---
@@ -150,10 +150,10 @@ PR_URL=$(gh pr create \
 ## Release v${NEW_VERSION}
 
 ### Checklist
-- [x] All tests pass (\`pnpm test\`)
-- [x] Biome check passes (\`pnpm run check\`)
-- [x] TypeScript check passes (\`pnpm run typecheck\`)
-- [x] Build succeeds (\`pnpm run build\`)
+- [x] All tests pass (\`npm test\`)
+- [x] Biome check passes (\`npm run check\`)
+- [x] TypeScript check passes (\`npm run typecheck\`)
+- [x] Build succeeds (\`npm run build\`)
 - [ ] CHANGELOG.md \`[Unreleased]\` section has release notes
 - [ ] README.md is up to date
 

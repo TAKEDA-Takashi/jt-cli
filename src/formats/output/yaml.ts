@@ -38,7 +38,7 @@ function colorizeYaml(yamlStr: string): string {
         if (!indent || !key) return line; // 型ガード
 
         // 値が空の場合（ネストされたオブジェクトまたは配列の開始）
-        if (!value || !value.trim()) {
+        if (!value?.trim()) {
           return `${indent}${chalk.blue(key)}:`;
         }
 

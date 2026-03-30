@@ -41,8 +41,8 @@
     "lint": "biome lint --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "prebuild": "pnpm run clean",
-    "prepublishOnly": "NODE_ENV=production pnpm run build",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "NODE_ENV=production npm run build",
     "start": "node dist/jt.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -59,7 +59,7 @@
     "jsonata": "^2.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.5",
+    "@biomejs/biome": "^2.4.9",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.19.13",
     "@vitest/coverage-v8": "^4.0.18",
@@ -73,10 +73,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
