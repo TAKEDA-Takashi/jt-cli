@@ -15,13 +15,13 @@
 mainブランチから以下を実行します:
 
 ```bash
-pnpm run release <patch|minor|major>
+npm run release <patch|minor|major>
 ```
 
 スクリプトが自動的に以下を行います:
 1. 前提条件チェック（mainブランチ、クリーンな状態、リモートと同期）
 2. リリース前チェック（test, check, typecheck, build）
-3. バージョン更新（package.json, pnpm-lock.yaml）
+3. バージョン更新（package.json, package-lock.json）
 4. CHANGELOG.mdの`[Unreleased]`セクションにバージョンと日付を設定
 5. リリースブランチ作成（`release/vX.Y.Z`）+ コミット + プッシュ
 6. GitHub PR作成
@@ -96,5 +96,5 @@ git push origin vX.Y.Z
 ### ローカルでの公開テスト（dry-run）
 
 ```bash
-pnpm publish --dry-run
+npm publish --dry-run
 ```

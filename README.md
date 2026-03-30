@@ -234,7 +234,7 @@ This outputs a JSON description of the tool's capabilities, options, and usage e
 ### Prerequisites
 
 - Node.js 22 or higher (Node.js 24 recommended)
-- pnpm
+- npm
 - nvm (recommended for managing Node.js versions)
 
 ### Setup
@@ -248,13 +248,13 @@ cd jt-cli
 nvm use  # This will use the version specified in .nvmrc (Node.js 24)
 
 # Install dependencies
-pnpm install
+npm install
 
 # Run tests
-pnpm test
+npm test
 
 # Build
-pnpm run build
+npm run build
 ```
 
 ### Testing
@@ -263,13 +263,13 @@ This project follows Test-Driven Development (TDD) practices:
 
 ```bash
 # Run all tests
-pnpm test
+npm test
 
 # Run tests in watch mode
-pnpm run test:watch
+npm run test:watch
 
 # Run with coverage
-pnpm run test:coverage
+npm run test:coverage
 ```
 
 ## Contributing
