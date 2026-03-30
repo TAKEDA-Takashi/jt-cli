@@ -41,8 +41,8 @@
     "lint": "biome lint --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "prebuild": "pnpm run clean",
-    "prepublishOnly": "NODE_ENV=production pnpm run build",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "NODE_ENV=production npm run build",
     "start": "node dist/jt.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -73,10 +73,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
