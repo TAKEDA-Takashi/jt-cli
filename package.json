@@ -63,7 +63,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.19.13",
     "@vitest/coverage-v8": "^4.0.18",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
