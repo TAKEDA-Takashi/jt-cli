@@ -30,7 +30,7 @@ fi
 # mainブランチにいることを確認
 CURRENT_BRANCH=$(git branch --show-current)
 if [[ "$CURRENT_BRANCH" != "main" ]]; then
-  echo "Error: mainブランチから実行してください（現在: $CURRENT_BRANCH）"
+  echo "Error: mainブランチから実行してください（現在: ${CURRENT_BRANCH}）"
   exit 1
 fi
 
