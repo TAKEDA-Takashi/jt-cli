@@ -108,7 +108,7 @@ npm test -- --coverage
 
 ### Test Coverage
 
-We maintain a minimum of 90% test coverage. New code should include comprehensive tests covering:
+Coverage thresholds are enforced by `vitest.config.ts` (currently 80% for lines, functions, branches and statements); that config is the single source of truth. New code should include comprehensive tests covering:
 - Happy path scenarios
 - Edge cases
 - Error conditions
