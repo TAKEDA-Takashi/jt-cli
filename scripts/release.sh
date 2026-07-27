@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # リリース準備スクリプト
-# Usage: ./scripts/release.sh <patch|minor|major>
+# Usage: ./scripts/release.sh <patch|minor|major> [--yes]
 #
 # 1. リリース前チェック（test, check, typecheck, build）
 # 2. バージョン更新（package.json）
@@ -15,14 +15,35 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
 # --- 引数チェック ---
-BUMP_TYPE="${1:-}"
-if [[ ! "$BUMP_TYPE" =~ ^(patch|minor|major)$ ]]; then
-  echo "Usage: $0 <patch|minor|major>"
+usage() {
+  echo "Usage: $0 <patch|minor|major> [--yes]"
+  echo ""
+  echo "Options:"
+  echo "  -y, --yes  確認プロンプトをスキップする（非対話環境では必須）"
   echo ""
   echo "Examples:"
   echo "  $0 patch   # 1.2.4 -> 1.2.5"
   echo "  $0 minor   # 1.2.4 -> 1.3.0"
   echo "  $0 major   # 1.2.4 -> 2.0.0"
+}
+
+BUMP_TYPE=""
+ASSUME_YES=false
+for arg in "$@"; do
+  case "$arg" in
+    patch|minor|major) BUMP_TYPE="$arg" ;;
+    -y|--yes) ASSUME_YES=true ;;
+    *)
+      echo "Error: 不明な引数です: $arg"
+      echo ""
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -z "$BUMP_TYPE" ]]; then
+  usage
   exit 1
 fi
 
@@ -30,7 +51,7 @@ fi
 # mainブランチにいることを確認
 CURRENT_BRANCH=$(git branch --show-current)
 if [[ "$CURRENT_BRANCH" != "main" ]]; then
-  echo "Error: mainブランチから実行してください（現在: $CURRENT_BRANCH）"
+  echo "Error: mainブランチから実行してください（現在: ${CURRENT_BRANCH}）"
   exit 1
 fi
 
@@ -71,10 +92,18 @@ echo "  Branch:          ${BRANCH_NAME}"
 echo ""
 
 # --- 確認 ---
-read -r -p "続行しますか？ (y/N): " CONFIRM
-if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
-  echo "キャンセルしました。"
-  exit 0
+if [[ "$ASSUME_YES" == true ]]; then
+  echo "--yes が指定されたため確認をスキップします。"
+elif [[ ! -t 0 ]]; then
+  echo "Error: 標準入力が端末ではないため確認プロンプトを表示できません。"
+  echo "       非対話環境で実行する場合は --yes を付けてください: $0 $BUMP_TYPE --yes"
+  exit 1
+else
+  read -r -p "続行しますか？ (y/N): " CONFIRM
+  if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
+    echo "キャンセルしました。"
+    exit 0
+  fi
 fi
 
 # --- リリース前チェック ---

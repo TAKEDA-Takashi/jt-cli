@@ -18,6 +18,12 @@ mainブランチから以下を実行します:
 npm run release <patch|minor|major>
 ```
 
+実行内容を表示したうえで確認プロンプトが出ます。CI や AI エージェント経由など標準入力が端末でない環境ではプロンプトに応答できないため、`--yes` を付けて実行します（付けずに実行するとエラーで停止し、リリースは行われません）:
+
+```bash
+npm run release -- <patch|minor|major> --yes
+```
+
 スクリプトが自動的に以下を行います:
 1. 前提条件チェック（mainブランチ、クリーンな状態、リモートと同期）
 2. リリース前チェック（test, check, typecheck, build）

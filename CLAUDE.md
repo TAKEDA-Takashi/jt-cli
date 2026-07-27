@@ -19,7 +19,7 @@ Biome 系スクリプトは名前から挙動が推測できないので注意:
 | `npm run lint` | `biome lint --write .` | する |
 | `npm run format` | `biome format --write .` | する |
 
-カバレッジ閾値は `vitest.config.ts` の `thresholds` が正（CONTRIBUTING.md にある「90%」は設定値と一致していない）。
+カバレッジ閾値は `vitest.config.ts` の `thresholds` が唯一の定義元。ドキュメントに数値を書き足さない。
 
 ## 主要モジュールと責務
 
