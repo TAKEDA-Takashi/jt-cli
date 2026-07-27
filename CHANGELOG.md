@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-07-27
+
+### Security
+- js-yaml: 4.1.1 → 4.3.0 (GHSA-52cp-r559-cp3m: YAML merge-key chains could force quadratic CPU consumption)
+- postcss: 8.5.8 → 8.5.23 (GHSA-r28c-9q8g-f849: path traversal in source map auto-loading, transitive dependency)
+
+### Updated
+- jsonata: 2.1.0 → 2.2.0
+- esbuild: 0.25.12 → 0.28.1
+- tsx: 4.21.0 → 4.22.4
+- vite: 8.0.3 → 8.0.16 (transitive dependency)
+
+### Changed
+- CLAUDE.md をプロジェクト固有の情報のみに整理（実装と乖離していた記述を修正）
+
 ## [1.3.1] - 2026-03-30
 
 ### Changed
@@ -142,7 +157,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All dependencies are up to date
 - No known vulnerabilities
 
-[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.3.2...HEAD
+[1.3.2]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.4...v1.3.0
 [1.2.4]: https://github.com/TAKEDA-Takashi/jt-cli/compare/v1.2.3...v1.2.4
