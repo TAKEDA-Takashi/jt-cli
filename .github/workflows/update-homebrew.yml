@@ -5,10 +5,11 @@ on:
     workflows: ["Release"]
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   update-homebrew:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout jt-cli repository
@@ -48,11 +49,20 @@ jobs:
           SHA256=$(sha256sum package.tgz | cut -d' ' -f1)
           echo "SHA256=$SHA256" >> $GITHUB_OUTPUT
       
+      - name: Generate GitHub App token for homebrew-tap
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.HOMEBREW_APP_CLIENT_ID }}
+          private-key: ${{ secrets.HOMEBREW_APP_PRIVATE_KEY }}
+          owner: TAKEDA-Takashi
+          repositories: homebrew-tap
+
       - name: Checkout homebrew-tap repository
         uses: actions/checkout@v4
         with:
           repository: TAKEDA-Takashi/homebrew-tap
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           path: homebrew-tap
       
       - name: Update Formula
@@ -74,7 +84,7 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           path: homebrew-tap
           commit-message: "chore: update jt-cli to version ${{ steps.release-info.outputs.VERSION }}"
           title: "Update jt-cli to version ${{ steps.release-info.outputs.VERSION }}"
@@ -99,4 +109,4 @@ jobs:
             --merge \
             --repo TAKEDA-Takashi/homebrew-tap
         env:
-          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
