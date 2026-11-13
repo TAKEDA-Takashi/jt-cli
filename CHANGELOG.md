@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.3] - 2026-11-13
 
+### Security
+- jsonata: 2.2.0 → 2.2.1 (GHSA-66mm-25pp-rfff, GHSA-2943-5xfg-gq5f: arbitrary code execution via crafted JSONata expressions; GHSA-663r-x48j-fg8p: prototype pollution via hasOwnProperty override)
+- csv-parse: 6.2.1 → 7.0.2 (GHSA-8cw4-87c7-c6xx: prototype replacement reachable via the columns option; upstream states 7.0.0 has no breaking changes)
+- js-yaml: 4.3.0 → 4.3.2 (GHSA-5p4m-2wfm-xmqj: quadratic CPU consumption in `!!omap` resolution; GHSA-2883-xcg3-v3hh: empty merge sources were not counted toward `maxTotalMergeKeys`)
+- vitest / @vitest/coverage-v8 / @vitest/mocker: 4.1.2 → 4.1.12 (GHSA-82fw-gwwq-j7x9, GHSA-qxg6-89mg-rqv8; dev dependency)
+- vite: 8.0.16 → 8.3.5 (GHSA-9jrq-w75r-8gcw, GHSA-rq7h-c2jc-7f22, and launch-editor advisories GHSA-r825-w8mm-5pxw, GHSA-587h-7wmj-h5pm, GHSA-698v-4r3x-3vcv; transitive dev dependency)
+- source-map-js: 1.2.1 → 1.2.2 (GHSA-68fv-2mgg-jv7q; transitive dev dependency)
+- nanoid: 3.3.16 → 3.3.20 (GHSA-2v37-7h3g-55p8; transitive dev dependency)
+
+### Updated
+- postcss: 8.5.23 → 8.5.32 (transitive dependency)
+
+### Changed
+- Release script accepts `--yes` to skip the confirmation prompt in non-interactive environments
+- Coverage thresholds are documented only in `vitest.config.ts`
+
+### Fixed
+- Release script no longer aborts with an unbound variable error instead of showing the "run from main" message under non-UTF-8 locales
+
 ## [1.3.2] - 2026-07-27
 
 ### Security
